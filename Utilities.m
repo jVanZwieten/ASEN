@@ -13,5 +13,9 @@ classdef Utilities
         function A = leftShift(A, n)
             A = A([(n + 1:end) (1:n)]);
         end
+
+        function Ahat = UnitVector(A)
+            Ahat = A/norm(A);
+        end
     end
 end

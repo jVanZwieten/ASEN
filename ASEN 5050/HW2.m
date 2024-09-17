@@ -1,3 +1,4 @@
+addpath('..')
 format shortG
 % 1
 clear
@@ -17,8 +18,8 @@ v = norm(V)
 H = astroUtilities.angularMomentumFromRV(R, V);
 h = norm(H)
 
-specMechNRG = astroUtilities.specificMechanicalNRGFromRV(R, V, mu_mars)
-a = astroUtilities.semiMajorAxisFromSpecificMechanicalNRG(specMechNRG, mu_mars)
+specMechNRG = astroUtilities.specificNRGFromRV(R, V, mu_mars)
+a = astroUtilities.semiMajorAxisFromspecificNRG(specMechNRG, mu_mars)
 
 E = astroUtilities.EccentricityFromRV(R, V, mu_mars)
 e = norm(E)
@@ -60,7 +61,7 @@ r_p = astroUtilities.periapsisFromAE(a, e)
 R_p = astroUtilities.PeriapsisFromRE(r_p, E)
 
 v_p = astroUtilities.velocityAtApsisFromHR(h, r_p)
-astroUtilities.specificMechanicalNRGFromrv(r_p, v_p, mu_mars)
+astroUtilities.specificNRGFromrv(r_p, v_p, mu_mars)
 
 C_p = astroUtilities.DirectionCosineMatrix(Omega, omega, 0, i)
 
@@ -68,28 +69,28 @@ V_p = C_p*[0; v_p; 0]
 cross(R_p, V_p)
 norm(cross(R_p, V_p))
 
-% % 2
-% clear
-% mu_moon = 4.9902799e3; % km^3/s^2
-% r_moonEquator = 1738; % km
+% 2
+clear
+mu_moon = 4.9902799e3; % km^3/s^2
+r_moonEquator = 1738; % km
 
-% Nhat = [0.6428; -0.766; 0];
-% Hhat = [-0.3237; -0.2717; 0.9063];
-% E = [0.0475; 0.3755; 0.1295];
+Nhat = [0.6428; -0.766; 0];
+Hhat = [-0.3237; -0.2717; 0.9063];
+E = [0.0475; 0.3755; 0.1295];
 
-% % a
-% e = norm(E)
-% i = astroUtilities.inclinationFromHhat(Hhat)
-% fprintf('%.6g\n', rad2deg(i))
-% Omega = -astroUtilities.RAANFromNhat(Nhat)
-% fprintf('%.6g\n', rad2deg(Omega))
-% omega = astroUtilities.argumentOfPeriapsisFromNE(Nhat, E)
-% fprintf('%.6g\n', rad2deg(omega))
+% a
+e = norm(E)
+i = astroUtilities.inclinationFromHhat(Hhat)
+fprintf('%.6g\n', rad2deg(i))
+Omega = -astroUtilities.RAANFromNhat(Nhat)
+fprintf('%.6g\n', rad2deg(Omega))
+omega = astroUtilities.argumentOfPeriapsisFromNE(Nhat, E)
+fprintf('%.6g\n', rad2deg(omega))
 
-% Ehat = E/e;
-% omega2 = acos(dot(Nhat, Ehat))
+Ehat = E/e;
+omega2 = acos(dot(Nhat, Ehat))
 
-% % b
-% r = 4070.6; % km
+% b
+r = 4070.6; % km
 
-% a = r*(1 + e*cos(-omega))/(1 - e^2)
+a = r*(1 + e*cos(-omega))/(1 - e^2)

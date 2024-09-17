@@ -7,8 +7,8 @@ v_r=-11.6485;
 format shortg
 
 % 1a
-nrg_mech=astroUtilities.mechanicalNRGFromA(a, mu_sun)
-v=astroUtilities.vFromMechanicalNRG(nrg_mech, mu_sun, r)
+nrg_mech=astroUtilities.specificNRGFromA(a, mu_sun)
+v=astroUtilities.velocityAtRFromSpecificNRG(nrg_mech, mu_sun, r)
 
 % 1b
 v_theta=sqrt(v^2 - v_r^2)
@@ -24,9 +24,9 @@ V_1d = [1.5180e1 2.8193e1 1.0504e-2]; % km/s
 
 H_1d = cross(R_1d, V_1d)
 h_1d = norm(H_1d)
-E_1d = astroUtilities.eccentricityFromRVH(R_1d, V_1d, H_1d, mu_sun)
+E_1d = astroUtilities.EccentricityFromRVH(R_1d, V_1d, H_1d, mu_sun)
 e_1d = norm(E_1d)
-nrg_mech_1d = astroUtilities.mechanicalNRGFromRV(R_1d, V_1d, mu_sun)
+nrg_mech_1d = astroUtilities.specificNRGFromRV(R_1d, V_1d, mu_sun)
 
 % 2a
 mu_jupiter=1.268e8;
@@ -35,11 +35,11 @@ v_inf = 10.7527;
 theta_inf=deg2rad(139.3724);
 
 nrg_mech_2a = v_inf^2/2
-a_2a = astroUtilities.semiMajorAxisFromMechanicalNRG(nrg_mech_2a, mu_jupiter)
-e_2a = astroUtilities.eccentricityFromTrueAnomalyInfinity(theta_inf)
+a_2a = astroUtilities.semiMajorAxisFromspecificNRG(nrg_mech_2a, mu_jupiter)
+e_2a = astroUtilities.eccentricityFromNuInfinity(theta_inf)
 turningAngle = astroUtilities.turningAngleFromEccentricity(e_2a)
 rad2deg(turningAngle)
 
 %2b
 r_p = astroUtilities.periapsisFromAE(a_2a, e_2a)
-v_p = astroUtilities.velocityAtRFromMechNRG(nrg_mech_2a, r_p, mu_jupiter)
+v_p = astroUtilities.velocityAtRFromSpecificNRG(nrg_mech_2a, r_p, mu_jupiter)
