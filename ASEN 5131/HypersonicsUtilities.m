@@ -1,32 +1,55 @@
 classdef HypersonicsUtilities
     properties(Constant)
-        inverseScaleHeight = 1.1387e-4 % /m, aTilde
-        airDensity_seaLevel = 1.225 % kg/m^3, rho_SL
-        earthSurfaceGravityAcceleration = 9.81 % m/s^2, g
+        inverseScaleHeight = 1.1387e-4; % /m, aTilde
+        airDensity_seaLevel = 1.225; % kg/m^3, rho_SL
+        earthSurfaceGravityAcceleration = 9.81; % m/s^2, g
+        earthRadius = 6378e3; % m
         velocityRatio_decelMax = exp(-.5); % v/v_0
         velocityRatio_heatingMax = exp(-1/6); % v/v_0
     end
 
     methods(Static)
         %% trajectories
+        function gammaDot = flightPathAngleRate(velocity, lift, weight, radialDistance, flightPathAngle)
+            g = HypersonicsUtilities.earthSurfaceGravityAcceleration;
+            gammaDot = (g/velocity)*(lift/weight - (1 - velocity^2/g/radialDistance)*cos(flightPathAngle));
+        end
+
+        function vDot = acceleration(thrust, weight, drag, flightPathAngle)
+            g = HypersonicsUtilities.earthSurfaceGravityAcceleration;
+            vDot = g*(thrust/weight - drag/weight - sin(flightPathAngle));
+        end
+
+        function rDot = radialDistanceRate(velocity, flightPathAngle)
+            rDot = velocity*sin(flightPathAngle);
+        end
+
+        function thetaDot = earthAngleRate(velocity, flightPathAngle, radialDistance)
+            thetaDot = velocity*cos(flightPathAngle)/radialDistance;
+        end
+
+        function h = altitude(radialDistance)
+            h = radialDistance - HypersonicsUtilities.earthRadius;
+        end
+
         function rho = airDensity(altitude)
             aTilde = HypersonicsUtilities.inverseScaleHeight;
             rho_SL = HypersonicsUtilities.airDensity_seaLevel;
             rho = rho_SL*exp(-aTilde*altitude);
         end
 
-        function h = altitude(airDensity)
+        function h = altitudeFromAirDensity(airDensity)
             aTilde = HypersonicsUtilities.inverseScaleHeight;
             rho_SL = HypersonicsUtilities.airDensity_seaLevel;
             h = log(airDensity/rho_SL)/(-aTilde);
         end
 
         function d = drag(dragCoefficient, area, airDensity, velocity)
-            d = .5*dragCoefficient*area*airDensity.velocity;
+            d = .5*dragCoefficient*area*airDensity*velocity^2;
         end
 
         function l = lift(liftCoefficient, area, airDensity, velocity)
-            l = .5*liftCoefficient*area*airDensity*velocity;
+            l = .5*liftCoefficient*area*airDensity*velocity^2;
         end
 
         function b = ballisticCoefficient(weight, dragCoefficient, area)

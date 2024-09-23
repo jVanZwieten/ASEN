@@ -17,5 +17,37 @@ classdef Utilities
         function Ahat = UnitVector(A)
             Ahat = A/norm(A);
         end
+
+        function multiplot(X, seriesLabels, axisLabels)
+            n = size(X, 1) - 1;
+            assert(length(seriesLabels) == n)
+            assert(length(axisLabels) == n + 1)
+            
+            figure
+            tiledlayout(n, 1)
+            for i=2:(n + 1)
+                nexttile
+                plot(X(1, :), X(i, :))
+                title(seriesLabels(i - 1))
+                xlabel(axisLabels(1))
+                ylabel(axisLabels(i))
+            end
+        end
+
+        function multiplotY(Y, seriesLabels, axisLabels)
+            n = size(Y, 1) - 1;
+            assert(length(seriesLabels) == n)
+            assert(length(axisLabels) == n + 1)
+            
+            figure
+            tiledlayout(n, 1)
+            for i=2:(n + 1)
+                nexttile
+                plot(Y(i, :), Y(1, :))
+                title(seriesLabels(i - 1))
+                xlabel(axisLabels(i))
+                ylabel(axisLabels(1))
+            end
+        end
     end
 end
