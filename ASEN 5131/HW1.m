@@ -1,5 +1,14 @@
 HU = HypersonicsUtilities;
 
+%% 1
+densityTable = altitudeDensityTable';
+calculatedAltitude = HU.airDensity(densityTable(1, :)*1000);
+plot(densityTable(2, :), densityTable(1, :), calculatedAltitude, densityTable(1, :))
+legend("Tabulated", "Calculated")
+title("Tabulated vs. Calculated Air Density vs. Altitude")
+ylabel("Altitude (km)")
+xlabel("Air Density (kg/m^3)")
+
 %% 2
 R_A = .05; % m
 R_B = .9; % m
@@ -22,3 +31,4 @@ decel_max = HU.maxG(v_0, gamma)
 rho_gMax = beta/2
 h_gMax = HU.altitude(rho_gMax)
 v_gMax = HU.velocityRatio_decelMax*v_0
+
