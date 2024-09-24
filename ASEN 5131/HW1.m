@@ -14,6 +14,13 @@ title("Tabulated vs. Calculated Air Density vs. Altitude")
 ylabel("Altitude (km)")
 xlabel("Air Density (kg/m^3)")
 
+figure
+error = (calculatedAltitude - densityTable(2, :))./densityTable(2, :);
+plot(error, densityTable(1, :))
+title("Error Across Altitudes")
+ylabel("Altitude (km)")
+xlabel("Error ((calc - table)/table)")
+
 %% 2
 R_A = .05; % m
 R_B = .9; % m

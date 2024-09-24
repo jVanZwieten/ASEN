@@ -65,6 +65,8 @@ classdef HypersonicsUtilities
         end
 
         %% ballistic trajectory
+        function vDot = accelerationSimplifiedBallistic()
+
         function vr = velocityRatio(airDensity, beta)
             vr = exp(-airDensity/beta);
         end
