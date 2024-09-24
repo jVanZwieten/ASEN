@@ -1,6 +1,6 @@
 classdef HypersonicsUtilities
     properties(Constant)
-        inverseScaleHeight = 1.1387e-4; % /m, aTilde
+        inverseScaleHeight = 1.387e-4; % /m, aTilde
         airDensity_seaLevel = 1.225; % kg/m^3, rho_SL
         earthSurfaceGravityAcceleration = 9.81; % m/s^2, g
         earthRadius = 6378e3; % m
@@ -77,6 +77,10 @@ classdef HypersonicsUtilities
         function beta = beta(mass, flightPathAngle, dragCoefficient, area)
             aTilde = HypersonicsUtilities.inverseScaleHeight;
             beta = -2*mass*aTilde*sin(flightPathAngle)/dragCoefficient/area;
+        end
+
+        function rho = airDensity_maxHeating(beta)
+            rho = beta/6;
         end
 
         function gs = maxG(velocity_0, flightPathAngle)

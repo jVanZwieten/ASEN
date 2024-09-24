@@ -1,4 +1,7 @@
 addpath('..')
+clear
+close all
+
 HU = HypersonicsUtilities;
 
 %% 1
@@ -14,19 +17,19 @@ xlabel("Air Density (kg/m^3)")
 %% 2
 R_A = .05; % m
 R_B = .9; % m
-A = pi*R_B^2; % m^2
+A = pi*R_B^2 % m^2
 m = 3400; % kg
 c_D = .4; % drag coefficient
-k = 2e-4/sqrt(R_B)
+k = 2e-4/sqrt(R_A)
 v_0 = 4500; % m/s
 h_0 = 100; % km
-gamma = deg2rad(-70); % flight path angle, degrees
+gamma = deg2rad(-70); % flight path angle, radians
 
 %% 2a
 beta = HU.beta(m, gamma, c_D, A)
 heating_max = HU.maxHeating(k, beta, v_0)
 v_heatingMax = HU.velocityRatio_heatingMax*v_0
-rho_heatingMax = (heating_max/k/v_heatingMax^3)^2
+rho_heatingMax = HU.airDensity_maxHeating(beta)
 h_heatingMax = HU.altitudeFromAirDensity(rho_heatingMax)
 
 decel_max = HU.maxG(v_0, gamma)
