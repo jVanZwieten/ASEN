@@ -1,7 +1,11 @@
 classdef astroUtilities
     methods(Static)
-        function H = angularMomentumFromRV(R, V)
+        function H = AngularMomentum(R, V)
             H = cross(R, V);
+        end
+
+        function h = angularMomentumFromae(a, e, mu)
+            h = sqrt(a*(1 - e^2)*mu);
         end
         
         function omega = argumentOfPeriapsisFromNE(N, E)
@@ -10,6 +14,10 @@ classdef astroUtilities
         
         function omega = argumentOfPeriapsisFromne(n, e)
             omega = acos(dot(n, e));
+        end
+
+        function r = conicEquation(a, e, nu)
+            r = a*(1 - e^2)/(1 + e*cos(nu));
         end
         
         function C = DirectionCosineMatrix(RAAN, AOP, trueAnomaly, inclination)
@@ -38,6 +46,10 @@ classdef astroUtilities
         function phi = flightPathAngleFromENu(e, nu)
             phi = atan(e*sin(nu)/(1 + e*cos(nu)));
         end
+
+        function phi = flightPathAngleFromhrv(h, r, v)
+            phi = acos(h/r/v);
+        end
         
         function i = inclinationFromH(H)
             i = astroUtilities.inclinationFromHhat(Utilities.UnitVector(H));
@@ -51,12 +63,26 @@ classdef astroUtilities
             N = [-H(2); H(1); 0];
         end
         
-        function r_p = periapsisFromAE(a, e)
+        function r_p = periapsisFromae(a, e)
             r_p = a*(1 - e);
         end
         
-        function R_p = PeriapsisFromRE(r_p, E)
-            R_p = r_p*E/norm(E);
+        function R_p = PeriaspisFromaE(a, E)
+            r_p = astroUtilities.periapsisFromae(a, norm(E));
+            R_p = PeriapsisFromrE(r_p, E);
+        end
+        
+        function R_p = PeriapsisFromrE(r_p, E)
+            Ehat = Utilities.UnitVector(E);
+            R_p = PeriapsisFromrEhat(r_p, Ehat);
+        end
+
+        function R_p = PeriapsisFromrEhat(r_p, Ehat)
+            R_p = r_p*Ehat;
+        end
+
+        function P = period(a, mu)
+            P = 2*pi/sqrt(mu)*sqrt(a^3); % s
         end
         
         function Omega = RAANFromN(N)
@@ -65,11 +91,6 @@ classdef astroUtilities
         
         function Omega = RAANFromNhat(Nhat)
             Omega = acos(Nhat(1));
-        end
-        
-        function R_p = RpFromAE(a, E)
-            r_p = astroUtilities.periapsisFromAE(a, norm(E));
-            R_p = PeriapsisFromRE(r_p, E);
         end
         
         function p = semiLatusRectumFromH(h, mu)
@@ -95,6 +116,10 @@ classdef astroUtilities
         function nu = trueAnomalyFromRE(R, E)
             nu = acos(dot(E, R)/(norm(E)*norm(R)));
         end
+
+        function nu = trueAnomalyFromhre(h, r, e, mu)
+            nu = acos((h^2/r/mu - 1)/e);
+        end
         
         function del = turningAngleFromEccentricity(e)
             del = 2*asin(1/e);
@@ -104,8 +129,8 @@ classdef astroUtilities
             v = h/r;
         end
         
-        function v = velocityAtRFromSpecificNRG(nrg_mech, r, mu)
-            v = sqrt(2*(nrg_mech + mu/r));
+        function v = velocityAtRFromSpecificNRG(specNRG, r, mu)
+            v = sqrt(2*(specNRG + mu/r));
         end
     end
 end

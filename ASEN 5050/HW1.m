@@ -41,5 +41,5 @@ turningAngle = astroUtilities.turningAngleFromEccentricity(e_2a)
 rad2deg(turningAngle)
 
 %2b
-r_p = astroUtilities.periapsisFromAE(a_2a, e_2a)
+r_p = astroUtilities.periapsisFromae(a_2a, e_2a)
 v_p = astroUtilities.velocityAtRFromSpecificNRG(nrg_mech_2a, r_p, mu_jupiter)

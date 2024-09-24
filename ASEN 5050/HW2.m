@@ -15,7 +15,7 @@ V = [-4.28843e-1;
 r = norm(R)
 v = norm(V)
 
-H = astroUtilities.angularMomentumFromRV(R, V);
+H = astroUtilities.AngularMomentum(R, V);
 h = norm(H)
 
 specMechNRG = astroUtilities.specificNRGFromRV(R, V, mu_mars)
@@ -57,8 +57,8 @@ fprintf('%.6g\n', rad2deg(phi))
 V_radialFrame_0 = [v*sin(phi); v*cos(phi); 0]
 
 % c
-r_p = astroUtilities.periapsisFromAE(a, e)
-R_p = astroUtilities.PeriapsisFromRE(r_p, E)
+r_p = astroUtilities.periapsisFromae(a, e)
+R_p = astroUtilities.PeriapsisFromrE(r_p, E)
 
 v_p = astroUtilities.velocityAtApsisFromHR(h, r_p)
 astroUtilities.specificNRGFromrv(r_p, v_p, mu_mars)
