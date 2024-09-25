@@ -29,7 +29,7 @@ m = 3400; % kg
 c_D = .4; % drag coefficient
 k = 2e-4/sqrt(R_A)
 v_0 = 4500; % m/s
-h_0 = 100; % km
+h_0 = 100*1000; % m
 gamma = deg2rad(-70); % flight path angle, radians
 
 %% 2a
@@ -45,32 +45,11 @@ h_gMax = HU.altitudeFromAirDensity(rho_gMax)
 v_gMax = HU.velocityRatio_decelMax*v_0
 
 %% 2b
-w = m*HU.earthSurfaceGravityAcceleration;
+% X = ballisticTrajectorySolver(1e-3, 30, v_0, gamma, h_0, m, c_D, A, false);
+% XAltitude = [X(1:3, :); HU.altitude(X(4, :)); X(5, :)];
+% Utilities.multiplot(XAltitude, ["velocity" "flight path angle" "altitude" "Earth angle"], ["time (s)" "velocity (m/s)" "\gamma (radians)" "altitude (m)" "\theta (radians)"])
 
-dt = .001; % s
-t_f = 28.5; % s
-steps = t_f/dt + 1; % +1 accounts for t = 0;
-X = [zeros(5, length(steps))]; % [t, v, gamma, r, theta]
-X(:, 1) = [0; v_0; gamma; h_0*1000 + HU.earthRadius; 0];
-for i = 2:steps
-    X(:, i) = TimeStep(X(:, i - 1), dt, w, c_D, A);
-end
+% Y = [XAltitude(4, :); XAltitude(2:3, :); XAltitude(5, :)];
+% Utilities.multiplotY(Y, ["velocity" "flight path angle" "Earth angle"], ["altitude (km)" "velocity (m/s)" "\gamma (radians)" "\theta (radians)"])
 
-XAltitude = [X(1:3, :); HU.altitude(X(4, :)); X(5, :)];
-Utilities.multiplot(XAltitude, ["velocity" "flight path angle" "altitude" "Earth angle"], ["time (s)" "velocity (m/s)" "\gamma (radians)" "altitude (m)" "\theta (radians)"])
-
-Y = [XAltitude(4, :); XAltitude(2:3, :); XAltitude(5, :)];
-Utilities.multiplotY(Y/1000, ["velocity" "flight path angle" "Earth angle"], ["altitude (km)" "velocity (m/s)" "\gamma (radians)" "\theta (radians)"])
-
-function X_next = TimeStep(X, dt, weight, dragCoefficient, area)
-    h = HypersonicsUtilities.altitude(X(4));
-    rho = HypersonicsUtilities.airDensity(h);
-    d = HypersonicsUtilities.drag(dragCoefficient, area, rho, X(2));
-
-    X_next = zeros(5, 1);
-    X_next(1) = X(1) + dt;
-    X_next(2) = X(2) + dt*HypersonicsUtilities.acceleration(0, weight, d, X(3));
-    X_next(3) = X(3) + dt*HypersonicsUtilities.flightPathAngleRate(X(2), 0, weight, X(4), X(3));
-    X_next(4) = X(4) + dt*HypersonicsUtilities.radialDistanceRate(X(2), X(3));
-    X_next(5) = X(5) + dt*HypersonicsUtilities.earthAngleRate(X(2), X(3), X(4));
-end
+XSimplified = ballisticTrajectorySolver(1e-3, 28.5, v_0, gamma, h_0, m, c_D, A, true);
