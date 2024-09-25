@@ -50,11 +50,11 @@ classdef HypersonicsUtilities
         end
         
         function d = drag(dragCoefficient, area, airDensity, velocity)
-            d = .5*dragCoefficient*area*airDensity*velocity^2;
+            d = .5.*dragCoefficient.*area.*airDensity.*velocity.^2;
         end
         
         function l = lift(liftCoefficient, area, airDensity, velocity)
-            l = .5*liftCoefficient*area*airDensity*velocity^2;
+            l = .5.*liftCoefficient.*area.*airDensity.*velocity.^2;
         end
         
         function b = ballisticCoefficient(weight, dragCoefficient, area)
@@ -66,12 +66,12 @@ classdef HypersonicsUtilities
         end
         
         function qDot = heatTransfer(k, airDensity, velocity)
-            qDot = k*sqrt(airDensity)*velocity^3;
+            qDot = k.*sqrt(airDensity).*velocity.^3;
         end
         
         %% ballistic trajectory
         function vDot = decelerationBallisticSimple(m, D)
-            vDot = D/m;
+            vDot = -D/m;
         end
         
         function vr = velocityRatio(airDensity, beta)

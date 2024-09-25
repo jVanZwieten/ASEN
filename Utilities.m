@@ -18,13 +18,14 @@ classdef Utilities
             Ahat = A/norm(A);
         end
 
-        function multiplot(X, seriesLabels, axisLabels)
+        function multiplot(X, seriesLabels, axisLabels, figureTitle)
             n = size(X, 1) - 1;
             assert(length(seriesLabels) == n)
             assert(length(axisLabels) == n + 1)
             
             figure
-            tiledlayout(n, 1)
+            t = tiledlayout(n, 1);
+            title(t, figureTitle)
             for i=2:(n + 1)
                 nexttile
                 plot(X(1, :), X(i, :))
@@ -34,13 +35,14 @@ classdef Utilities
             end
         end
 
-        function multiplotY(Y, seriesLabels, axisLabels)
+        function multiplotY(Y, seriesLabels, axisLabels, figureTitle)
             n = size(Y, 1) - 1;
             assert(length(seriesLabels) == n)
             assert(length(axisLabels) == n + 1)
             
             figure
-            tiledlayout(n, 1)
+            t = tiledlayout(n, 1);
+            title(t, figureTitle)
             for i=2:(n + 1)
                 nexttile
                 plot(Y(i, :), Y(1, :))

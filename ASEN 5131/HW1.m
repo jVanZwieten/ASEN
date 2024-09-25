@@ -45,11 +45,79 @@ h_gMax = HU.altitudeFromAirDensity(rho_gMax)
 v_gMax = HU.velocityRatio_decelMax*v_0
 
 %% 2b
-% X = ballisticTrajectorySolver(1e-3, 30, v_0, gamma, h_0, m, c_D, A, false);
-% XAltitude = [X(1:3, :); HU.altitude(X(4, :)); X(5, :)];
-% Utilities.multiplot(XAltitude, ["velocity" "flight path angle" "altitude" "Earth angle"], ["time (s)" "velocity (m/s)" "\gamma (radians)" "altitude (m)" "\theta (radians)"])
+dt = 1e-3; % s
+t_f = 28.5; % s
 
-% Y = [XAltitude(4, :); XAltitude(2:3, :); XAltitude(5, :)];
-% Utilities.multiplotY(Y, ["velocity" "flight path angle" "Earth angle"], ["altitude (km)" "velocity (m/s)" "\gamma (radians)" "\theta (radians)"])
+X = ballisticTrajectorySolver(dt, t_f, v_0, gamma, h_0, m, c_D, A, false);
+plotBallisticSim(X, 'Ballistic Simulation')
+exportBallisticSim(X, 'ballisticSim.dat')
 
-XSimplified = ballisticTrajectorySolver(1e-3, 28.5, v_0, gamma, h_0, m, c_D, A, true);
+XSimplified = ballisticTrajectorySolver(dt, t_f, v_0, gamma, h_0, m, c_D, A, true);
+plotBallisticSim(XSimplified, 'Ballistic Simulation Simplified')
+exportBallisticSim(XSimplified, 'ballisticSimSimplified.dat')
+
+%% 2c
+[maxQ_Simplified h_maxQSimplified v_maxQSimplified] = maxQ(XSimplified, k)
+[maxG_Simplified h_maxGSimplified v_maxGSimplified] = maxG(XSimplified, c_D, A, m)
+
+%% 2d
+[maxQ_Sim h_maxQSim v_maxQSim] = maxQ(X, k)
+[maxG_Sim h_maxGSim v_maxGSim] = maxG(X, c_D, A, m)
+
+%% 2e
+plotVelocityTime(X, 'Ballistic Simulation, Unsimplified')
+plotVelocityTime(XSimplified, 'Ballistic Simulation Simplified')
+
+function plotBallisticSim(X, title)
+    XAltitude = [X(1:3, :); HypersonicsUtilities.altitude(X(4, :)); X(5, :)];
+    Utilities.multiplot(XAltitude, ["velocity" "flight path angle" "altitude" "Earth angle"], ["time (s)" "velocity (m/s)" "\gamma (radians)" "altitude (m)" "\theta (radians)"], title + " time plots")
+
+    Y = [XAltitude(4, :); XAltitude(2:3, :); XAltitude(5, :)];
+    Utilities.multiplotY(Y, ["velocity" "flight path angle" "Earth angle"], ["altitude (km)" "velocity (m/s)" "\gamma (radians)" "\theta (radians)"], title + " altitude profiles")
+end
+
+function exportBallisticSim(X, filename)
+    format = '%12.5g';
+
+    time = sprintfc('%6.4f', X(1, :)');
+    velocity = sprintfc(format, X(2, :)');
+    flightPathAngle = sprintfc(format, X(3, :)');
+    altitude = sprintfc(format, HypersonicsUtilities.altitude(X(4, :))');
+    earthAngle = sprintfc(format, X(5, :)');
+    
+    t = table(time, velocity, flightPathAngle, altitude, earthAngle);
+    writetable(t, filename)
+end
+
+function [maxQ, h_maxQ, v_maxQ] = maxQ(X, k)
+    Q = HypersonicsUtilities.heatTransfer(k, HypersonicsUtilities.airDensity(HypersonicsUtilities.altitude(X(4, :))), X(2, :));
+    [maxQ i] = max(Q);
+    h_maxQ = HypersonicsUtilities.altitude(X(4, i));
+    v_maxQ = X(2, i);
+end
+
+function [maxG, h_maxG, v_maxG] = maxG(X, c_D, A, m)
+    G = HypersonicsUtilities.acceleration(0, HypersonicsUtilities.drag(c_D, A, HypersonicsUtilities.airDensity(HypersonicsUtilities.altitude(X(4, :))), X(2, :)), m, X(3, :))/HypersonicsUtilities.earthSurfaceGravityAcceleration;
+    [maxG i] = min(G);
+    h_maxG = HypersonicsUtilities.altitude(X(4, i));
+    v_maxG = X(2, i);
+end
+
+function plotVelocityTime(X, figureTitle)
+    figure
+    t = tiledlayout(2, 1);
+    title(t, figureTitle)
+    altitude = HypersonicsUtilities.altitude(X(4, :))/1000;
+
+    nexttile
+    plot(X(2, :), altitude)
+    ylabel('altitude (km)')
+    xlabel('velocity (m/s)')
+    title('velocity profile')
+
+    nexttile
+    plot(X(1, :), altitude)
+    ylabel('altitude (km)')
+    xlabel('time (s)')
+    title('time profile')
+end
