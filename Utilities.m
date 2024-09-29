@@ -1,9 +1,21 @@
 classdef Utilities
+    properties(Constant)
+        radius_earth = 6378137; % m, WGS-84 fundamental parameter
+        flattening_earth = 1/298.257223563; % WGS-84 fundamental parameter
+        eccentricity_earth = sqrt(2*Utilities.flattening_earth - Utilities.flattening_earth^2); % WGS-84 fundamental parameter
+    end
+
     methods(Static)
         function hex = binVector2Hex(V)
             binary_str = num2str(V);
             binary_str = binary_str(~isspace(binary_str));
             hex = dec2hex(bin2dec(binary_str));
+        end
+
+        function [i j k] = decompose(V)
+            i = V(1);
+            j = V(2);
+            k = V(3);
         end
 
         function A = rightShift(A, n)
@@ -50,6 +62,18 @@ classdef Utilities
                 xlabel(axisLabels(i))
                 ylabel(axisLabels(1))
             end
+        end
+
+        function multiSeries(X, seriesLabels, axisLabels, figureTitle)
+            figure
+            hold on
+            for i=2:size(X, 1)
+                plot(X(1, :), X(i, :))
+            end
+            xlabel(axisLabels(1));
+            ylabel(axisLabels(2));
+            title(figureTitle);
+            legend(seriesLabels)
         end
     end
 end
