@@ -87,26 +87,39 @@ classdef astroUtilities
             i = acos(Hhat(3));
         end
 
-        function E = KeplerNewtonSolver(t, a, e, mu)
-            tolerance = 10^-5;
+        function E = KeplerNewtonSolvert(t, a, e, mu)
 
             n = astroUtilities.meanMotionFroma(a, mu);
-            E = n*t;
-            while((astroUtilities.timePeriapsisToEccentricAnomaly(E, e, n) - t) > tolerance)
-                E = E - astroUtilities.gE(E, e, n*t)/astroUtilities.dgdE(E, e);
+            M = n*t;
+
+            E = KeplerNewtonSolver(M, a, e, mu)
+        end
+
+        function E = KeplerNewtonSolver(M, a, e, mu)
+            tolerance = 1e-6;
+            E = M; % initial guess
+
+            delta = inf;
+            while(abs(delta) > tolerance)
+                delta = astroUtilities.g(E, e, M)/astroUtilities.dgdE(E, e);
+                E = E - delta;
             end
         end
 
-        function gE = gE(E, e, M)
-            gE = E - e*sin(E) - M;
+        function gE = g(E, e, M)
+            gE = astroUtilities.meanAnomalyFromE(E, e) - M;
         end
 
         function dgdE = dgdE(E, e)
-            dgdE = -e*cos(E);
+            dgdE = 1 - e*cos(E);
         end
         
         function N = LineOfNodesFromH(H)
             N = [-H(2); H(1); 0];
+        end
+
+        function M = meanAnomalyFromE(E, e)
+            M = E + e*sin(E);
         end
 
         function n = meanMotionFroma(a, mu)
@@ -194,7 +207,7 @@ classdef astroUtilities
         function t = timePeriapsisToEccentricAnomaly(E, e, n)
             t = (E - e*sin(E))/n;
         end
-        
+
         function nu = trueAnomalyFromRE(R, E)
             nu = acos(dot(E, R)/(norm(E)*norm(R)));
         end
@@ -206,7 +219,11 @@ classdef astroUtilities
         function nu = trueAnomalyFrompre(p, r, e)
             nu = acos((p/r - 1)/e);
         end
-        
+
+        function nu = trueFromEccentricAnomaly(E, e)
+            nu = 2*atan(sqrt((1 + e)/(1 - e))*tan(E/2));
+        end
+
         function del = turningAngleFromEccentricity(e)
             del = 2*asin(1/e);
         end

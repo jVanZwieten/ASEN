@@ -95,4 +95,10 @@ R_2 = f*R_1 + g*V_1
 V_2 = fDot*R_1 + gDot*V_1
 
 %% 2f
-P = astroUtilities.period(a, mu_jupiter);
+P = astroUtilities.period(a, mu_jupiter)
+t_13 = Utilities.days2s(20)
+M_3 = meanMotion*t_13 + E_1 + e*sin(E_1)
+
+E_3 = astroUtilities.KeplerNewtonSolver(M_3, a, e, mu_jupiter)
+assert(abs(M_3 - astroUtilities.meanAnomalyFromE(E_3, e)) < 1e-5) % ensures accurate to 5 decimals
+nu_3 = astroUtilities.trueFromEccentricAnomaly(E_3, e)

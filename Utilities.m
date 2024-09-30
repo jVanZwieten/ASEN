@@ -12,6 +12,10 @@ classdef Utilities
             hex = dec2hex(bin2dec(binary_str));
         end
 
+        function s = days2s(d)
+            s = d*24*60*60;
+        end
+
         function [i j k] = decompose(V)
             i = V(1);
             j = V(2);
