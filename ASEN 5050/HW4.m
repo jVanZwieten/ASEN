@@ -93,3 +93,6 @@ gDot = astroUtilities.gDotFunction(r_1, p, deltaNu)
 
 R_2 = f*R_1 + g*V_1
 V_2 = fDot*R_1 + gDot*V_1
+
+%% 2f
+P = astroUtilities.period(a, mu_jupiter);

@@ -86,6 +86,24 @@ classdef astroUtilities
         function i = inclinationFromHhat(Hhat)
             i = acos(Hhat(3));
         end
+
+        function E = KeplerNewtonSolver(t, a, e, mu)
+            tolerance = 10^-5;
+
+            n = astroUtilities.meanMotionFroma(a, mu);
+            E = n*t;
+            while((astroUtilities.timePeriapsisToEccentricAnomaly(E, e, n) - t) > tolerance)
+                E = E - astroUtilities.gE(E, e, n*t)/astroUtilities.dgdE(E, e);
+            end
+        end
+
+        function gE = gE(E, e, M)
+            gE = E - e*sin(E) - M;
+        end
+
+        function dgdE = dgdE(E, e)
+            dgdE = -e*cos(E);
+        end
         
         function N = LineOfNodesFromH(H)
             N = [-H(2); H(1); 0];
@@ -171,6 +189,10 @@ classdef astroUtilities
         function dt = timeBetweenTrueAnomaliesa(nu_1, nu_2, a, e, mu)
             n = astroUtilities.meanMotionFroma(mu, a);
             dt = astroUtilities.timeBetweenTrueAnomalies(nu_1, nu_2, e, n);
+        end
+
+        function t = timePeriapsisToEccentricAnomaly(E, e, n)
+            t = (E - e*sin(E))/n;
         end
         
         function nu = trueAnomalyFromRE(R, E)
