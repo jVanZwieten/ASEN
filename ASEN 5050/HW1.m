@@ -15,7 +15,7 @@ v_theta=sqrt(v^2 - v_r^2)
 
 % 1c
 h = cross([r 0 0], [v_r, v_theta 0])
-p = astroUtilities.semiLatusRectumFromH(norm(h), mu_sun)
+p = astroUtilities.semiLatusRectumFromh(norm(h), mu_sun)
 e = astroUtilities.eccentricityFromSemiLatusRectum(p, a)
 
 % 1d

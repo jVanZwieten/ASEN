@@ -75,5 +75,9 @@ classdef Utilities
             title(figureTitle);
             legend(seriesLabels)
         end
+
+        function d = s2days(s)
+            d = s/60/60/24;
+        end
     end
 end
