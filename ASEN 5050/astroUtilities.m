@@ -16,7 +16,7 @@ classdef astroUtilities
             omega = acos(dot(n, e));
         end
 
-        function r = conicEquation(a, e, nu)
+        function r = conicEquationa(a, e, nu)
             r = a*(1 - e^2)/(1 + e*cos(nu));
         end
 
@@ -50,7 +50,11 @@ classdef astroUtilities
         function e = eccentricityFromSemiLatusRectum(p, a)
             e = sqrt(1 - p/a);
         end
-        
+
+        function e = eccentricityFromspecNRGh(specNRG, h, mu)
+            e = sqrt(1 + 2*specNRG*h^2/mu^2);
+        end
+
         function e = eccentricityFromNuInfinity(nu_inf)
             e = -1/cos(nu_inf);
         end
@@ -119,7 +123,7 @@ classdef astroUtilities
         end
 
         function M = meanAnomalyFromE(E, e)
-            M = E + e*sin(E);
+            M = E - e*sin(E);
         end
 
         function n = meanMotionFroma(a, mu)
@@ -148,8 +152,8 @@ classdef astroUtilities
             R_p = r_p*Ehat;
         end
 
-        function P = period(a, mu)
-            P = 2*pi/sqrt(mu)*sqrt(a^3); % s
+        function T = period(a, mu)
+            T = 2*pi*sqrt(a^3/mu); % s
         end
         
         function Omega = RAANFromN(N)
@@ -159,9 +163,17 @@ classdef astroUtilities
         function Omega = RAANFromNhat(Nhat)
             Omega = acos(Nhat(1));
         end
+
+        function p = semiLatusRectumFromae(a, e)
+            p = a*(1 - e^2);
+        end
         
         function p = semiLatusRectumFromh(h, mu)
             p = h^2/mu;
+        end
+
+        function a = semiMajorAxisFromhe(h, e, mu)
+            a = h^2/(mu*(1 - e^2));
         end
 
         function a = semiMajorAxisFrompe(p, e)
@@ -184,24 +196,24 @@ classdef astroUtilities
             specMechNRG = v^2/2 - mu/r;
         end
 
-        function dt = timeBetweenEccentricAnomalies(E_1, E_2, e, n)
-            dt = 1/n*((E_2 - e*sin(E_2)) - (E_1 - e*sin(E_1)));
+        function dt = timeBetweenEccentricAnomalies(E_1, E_2, e, n, k)
+            dt = (2*pi*k + astroUtilities.meanAnomalyFromE(E_2, e) - astroUtilities.meanAnomalyFromE(E_1, e))/n;
         end
 
-        function dt = timeBetweenEccentricAnomaliesa(E_1, E_2, a, e, mu)
-            n = astroUtilities.meanMotionFroma(mu, a);
-            dt = astroUtilities.timeBetweenEccentricAnomalies(E_1, E_2, n, e);
+        function dt = timeBetweenEccentricAnomaliesa(E_1, E_2, a, e, k, mu)
+            n = astroUtilities.meanMotionFroma(a, mu);
+            dt = astroUtilities.timeBetweenEccentricAnomalies(E_1, E_2, e, n, k);
         end
 
-        function dt = timeBetweenTrueAnomalies(nu_1, nu_2, e, n)
+        function dt = timeBetweenTrueAnomalies(nu_1, nu_2, e, n, k)
             E_1 = astroUtilities.eccentricAnomalyFromnu(nu_1, e);
             E_2 = astroUtilities.eccentricAnomalyFromnu(nu_2, e);
-            dt = astroUtilities.timeBetweenEccentricAnomalies(E_1, E_2, e, n);
+            dt = astroUtilities.timeBetweenEccentricAnomalies(E_1, E_2, e, n, k);
         end
 
-        function dt = timeBetweenTrueAnomaliesa(nu_1, nu_2, a, e, mu)
-            n = astroUtilities.meanMotionFroma(mu, a);
-            dt = astroUtilities.timeBetweenTrueAnomalies(nu_1, nu_2, e, n);
+        function dt = timeBetweenTrueAnomaliesa(nu_1, nu_2, a, e, k, mu)
+            n = astroUtilities.meanMotionFroma(a, mu);
+            dt = astroUtilities.timeBetweenTrueAnomalies(nu_1, nu_2, e, n, k);
         end
 
         function t = timePeriapsisToEccentricAnomaly(E, e, n)
@@ -214,6 +226,10 @@ classdef astroUtilities
 
         function nu = trueAnomalyFromhre(h, r, e, mu)
             nu = acos((h^2/r/mu - 1)/e);
+        end
+
+        function nu = trueAnomalyFromaer(a, e, r)
+            nu = acos(a*(1 - e^2)/(e*r) - 1/e);
         end
 
         function nu = trueAnomalyFrompre(p, r, e)

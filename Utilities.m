@@ -22,6 +22,10 @@ classdef Utilities
             k = V(3);
         end
 
+        function s = h2s(h)
+            s = h*60*60;
+        end
+
         function A = rightShift(A, n)
             A = A([(end - n + 1:end) (1:end - n)]);
         end
