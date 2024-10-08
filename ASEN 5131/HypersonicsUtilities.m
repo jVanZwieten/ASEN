@@ -101,5 +101,10 @@ classdef HypersonicsUtilities
         function qDot_max = maxHeating(k, beta, velocity_0)
             qDot_max = k*sqrt(beta/6)*exp(-.5)*velocity_0^3;
         end
+
+        %% aerothermaldynamics
+        function KEh0 = kineticEnergyRatio(M, gamma)
+            KEh0 = M.^2./(2/(gamma - 1) + M.^2);
+        end
     end
 end

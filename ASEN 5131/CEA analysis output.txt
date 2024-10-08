@@ -1,0 +1,95 @@
+
+
+         NASA-GLENN CHEMICAL EQUILIBRIUM PROGRAM CEA2, FEBRUARY 5, 2004
+                   BY  BONNIE MCBRIDE AND SANFORD GORDON
+      REFS: NASA RP-1311, PART I, 1994 AND NASA RP-1311, PART II, 1996
+
+ *******************************************************************************
+
+  
+ ### CEA analysis performed on Tue 08-Oct-2024 14:53:32
+  
+ # Problem Type: "Assigned Temperature and Pressure"
+  
+ prob case=_______________7500 tp   ions
+  
+ # Pressure (1 value):
+ p,atm= 1
+ # Temperature (2 values):
+ t,k= 5000, 8000
+  
+ # You selected the following reactants:
+ reac
+ name N2               mole= 80.0000
+ name O2               mole= 20.0000
+  
+ # You selected these options for output:
+ # short version of output
+ output short
+ # Proportions of any products will be expressed as Mass Fractions.
+ output massf
+ # Heat will be expressed as siunits
+ output siunits
+ # Trace variable:
+ output trace=1e-10
+  
+ # Input prepared by this script:/var/www/sites/cearun.grc.nasa.gov/cgi-bin/CEARU
+ N/prepareInputFile.cgi
+  
+ ### IMPORTANT:  The following line is the end of your CEA input file!
+ end
+
+               THERMODYNAMIC EQUILIBRIUM PROPERTIES AT ASSIGNED
+
+                           TEMPERATURE AND PRESSURE
+
+ CASE = _______________
+
+             REACTANT                       MOLES         ENERGY      TEMP
+                                                         KJ/KG-MOL      K
+ NAME        N2                          80.0000000         0.000      0.000
+ NAME        O2                          20.0000000         0.000      0.000
+
+ O/F=    0.00000  %FUEL=  0.000000  R,EQ.RATIO= 0.000000  PHI,EQ.RATIO= 0.000000
+
+ THERMODYNAMIC PROPERTIES
+
+ P, BAR            1.0132   1.0132
+ T, K             5000.00  8000.00
+ RHO, KG/CU M    5.8380-2 2.3273-2
+ H, KJ/KG         9866.70  38039.6
+ U, KJ/KG         8131.08  33685.9
+ G, KJ/KG        -46692.0 -86134.5
+ S, KJ/(KG)(K)    11.3117  15.5218
+
+ M, (1/n)          23.953   15.278
+ (dLV/dLP)t      -1.01270 -1.05050
+ (dLV/dLT)p        1.2140   1.7801
+ Cp, KJ/(KG)(K)    2.8309   8.4706
+ GAMMAs            1.2019   1.1808
+ SON VEL,M/SEC     1444.3   2267.3
+
+ MASS FRACTIONS
+
+ *e-             9.496-10 8.659 -8
+ *N              1.5431-2 6.6183-1
+ *N+             2.1202-9 1.5236-3
+ *N-             1.0322-9 7.8804-7
+ *NO             2.2239-2 1.5488-3
+ *NO+            5.2073-5 6.1154-4
+ NO2             8.9059-7 3.0944-9
+ *N2             7.5203-1 1.1340-1
+ *N2+            1.0827-8 9.7183-5
+ *N2-            3.6546-9 4.0683-8
+ N2O             1.9273-6 4.8383-8
+ N2O+            4.176-11 4.563 -9
+ N3              1.8818-8 5.8166-8
+ *O              2.0758-1 2.2056-1
+ *O+             4.9456-8 4.0478-4
+ *O-             1.4640-7 7.6151-7
+ *O2             2.6686-3 1.8246-5
+ *O2+            4.4487-8 5.5975-7
+ O2-             5.747-10 4.501-11
+ O3              5.794 -9 2.372-11
+
+  * THERMODYNAMIC PROPERTIES FITTED TO 20000.K

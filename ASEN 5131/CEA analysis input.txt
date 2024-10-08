@@ -1,0 +1,30 @@
+### CEA analysis performed on Tue 08-Oct-2024 14:53:32
+
+# Problem Type: "Assigned Temperature and Pressure"  
+
+prob case=_______________7500 tp   ions  
+
+# Pressure (1 value):
+p,atm= 1
+# Temperature (2 values):
+t,k= 5000, 8000
+
+# You selected the following reactants:
+reac
+name N2               mole= 80.0000 
+name O2               mole= 20.0000 
+
+# You selected these options for output:
+# short version of output
+output short 
+# Proportions of any products will be expressed as Mass Fractions.
+output massf
+# Heat will be expressed as siunits
+output siunits
+# Trace variable:
+output trace=1e-10
+
+# Input prepared by this script:/var/www/sites/cearun.grc.nasa.gov/cgi-bin/CEARUN/prepareInputFile.cgi
+
+### IMPORTANT:  The following line is the end of your CEA input file!
+end
