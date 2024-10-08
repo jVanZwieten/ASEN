@@ -12,14 +12,18 @@ classdef Utilities
             hex = dec2hex(bin2dec(binary_str));
         end
 
+        function clampedResult = clamp(x, upperBound, lowerBound)
+            clampedResult = max(min(x, upperBound), lowerBound);
+        end
+
         function s = days2s(d)
             s = d*24*60*60;
         end
 
-        function [i j k] = decompose(V)
-            i = V(1);
-            j = V(2);
-            k = V(3);
+        function varargout = decompose(V)
+            for i = 1:size(V, 1)
+                varargout{i} = V(i, :);
+            end
         end
 
         function s = h2s(h)
@@ -84,8 +88,26 @@ classdef Utilities
             legend(seriesLabels)
         end
 
+        function semicircles = rad2semicircle(rads)
+            semicircles = rads/pi;
+        end
+
         function d = s2days(s)
             d = s/60/60/24;
+        end
+
+        function rads = semicircle2rad(semicircles)
+            rads = pi*semicircles;
+        end
+
+        function Norms = VectorizedNorms(varargin)
+            Norms = zeros(size(varargin{1}));
+            
+            for i = 1:nargin
+                Norms = Norms + varargin{i}.^2;
+            end
+            
+            Norms = sqrt(Norms);
         end
     end
 end
