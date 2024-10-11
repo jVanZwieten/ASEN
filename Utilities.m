@@ -3,13 +3,28 @@ classdef Utilities
         radius_earth = 6378137; % m, WGS-84 fundamental parameter
         flattening_earth = 1/298.257223563; % WGS-84 fundamental parameter
         eccentricity_earth = sqrt(2*Utilities.flattening_earth - Utilities.flattening_earth^2); % WGS-84 fundamental parameter
+        rotationRate_earth = 7.2921151467e-5; % rad/s
+
+        speedOfLight = 299792458; % m/s
     end
 
     methods(Static)
+        function tt = appendTimetableRow(tt, newRowTime, newRowValues)
+            variableNames = tt.Properties.VariableNames;
+            assert(length(variableNames) == length(newRowValues))
+            newRow = timetable(newRowTime, newRowValues{:}, 'VariableNames', variableNames);
+            tt = sortrows([tt; newRow]);
+        end
+
         function hex = binVector2Hex(V)
             binary_str = num2str(V);
             binary_str = binary_str(~isspace(binary_str));
             hex = dec2hex(bin2dec(binary_str));
+        end
+
+        function A = breakSeries(M, breakpoint)
+            n = size(M, 1);
+            A = [M(:, M(1, :) < breakpoint) NaN(n, 1) M(:, M(1, :)> breakpoint)];
         end
 
         function clampedResult = clamp(x, upperBound, lowerBound)
@@ -30,16 +45,16 @@ classdef Utilities
             s = h*60*60;
         end
 
-        function A = rightShift(A, n)
-            A = A([(end - n + 1:end) (1:end - n)]);
+        function h = hourOfDay(timeArray)
+            h = timeArray.Hour + timeArray.Minute/60 + timeArray.Second/60/60;
+        end
+
+        function m = km2m(km)
+            m = 1000*km;
         end
 
         function A = leftShift(A, n)
             A = A([(n + 1:end) (1:n)]);
-        end
-
-        function Ahat = UnitVector(A)
-            Ahat = A/norm(A);
         end
 
         function multiplot(X, seriesLabels, axisLabels, figureTitle)
@@ -92,12 +107,24 @@ classdef Utilities
             semicircles = rads/pi;
         end
 
+        function A = rightShift(A, n)
+            A = A([(end - n + 1:end) (1:end - n)]);
+        end
+
         function d = s2days(s)
-            d = s/60/60/24;
+            d = Utilities.s2h(s)/24;
+        end
+
+        function h = s2h(s)
+            h = s/60/60;
         end
 
         function rads = semicircle2rad(semicircles)
             rads = pi*semicircles;
+        end
+
+        function Ahat = UnitVector(A)
+            Ahat = A/norm(A);
         end
 
         function Norms = VectorizedNorms(varargin)
