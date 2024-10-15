@@ -1,5 +1,6 @@
 classdef Utilities
     properties(Constant)
+        accelerationGravity_earthSurface = 9.81; % m/s^2
         radius_earth = 6378137; % m, WGS-84 fundamental parameter
         flattening_earth = 1/298.257223563; % WGS-84 fundamental parameter
         eccentricity_earth = sqrt(2*Utilities.flattening_earth - Utilities.flattening_earth^2); % WGS-84 fundamental parameter
@@ -117,6 +118,10 @@ classdef Utilities
 
         function h = s2h(s)
             h = s/60/60;
+        end
+
+        function y = s2y(s)
+            y = s/60/60/24/365;
         end
 
         function rads = semicircle2rad(semicircles)

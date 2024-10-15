@@ -29,6 +29,7 @@ The purpose of maintainable code is not to explain the physics or equation deriv
 * V = vector (nx1)
 * Hat = unit vector
 * M = matrix (nxm)
+* d = delta
 * Dot = rate (derivative)
 * DotDot ... multiple derivative
 
