@@ -140,12 +140,6 @@ rangett.("Range_corrected") = AzElTransitTimeCorrected_prn8(3, :)';
 rangett = Utilities.appendTimetableRow(rangett, datetime(2024, 8, 26, 10, 0, 0, 'Timezone', 'UTC'), {NaN NaN});
 
 figure
-% hold on
-% plot(rangett.T, rangett.Range_uncorrected)
-% plot(rangett.T, rangett.Range_corrected)
-% xlabel("Time")
-% ylabel("Range Correction (m)")
-% title("PRN8 Range to NIST at Transmission Time")
 stackedplot(rangett)
 xlim(dayHourLimitDatetime)
 title("PRN8 Range to NIST at Transmission Time")

@@ -28,6 +28,10 @@ classdef Utilities
             A = [M(:, M(1, :) < breakpoint) NaN(n, 1) M(:, M(1, :)> breakpoint)];
         end
 
+        function tt = breakTimeTable(tt, breakTime)
+            tt = Utilities.appendTimetableRow(tt, breakTime, repmat({NaN}, 1, size(tt, 2)));
+        end
+
         function clampedResult = clamp(x, upperBound, lowerBound)
             clampedResult = max(min(x, upperBound), lowerBound);
         end
@@ -129,7 +133,7 @@ classdef Utilities
         end
 
         function Ahat = UnitVector(A)
-            Ahat = A/norm(A);
+            Ahat = A./vecnorm(A, 2, 1);
         end
 
         function Norms = VectorizedNorms(varargin)

@@ -32,5 +32,6 @@ The purpose of maintainable code is not to explain the physics or equation deriv
 * d = delta
 * Dot = rate (derivative)
 * DotDot ... multiple derivative
+* T = tilde
 
 If variables a and aV exist, a is the magnitude of aV.

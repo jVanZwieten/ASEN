@@ -1,7 +1,9 @@
 classdef GnssUtilities
     properties(Constant)
         frequency_L1 = 1575.42e6; % Hz
+        wavelength_L1 = Utilities.speedOfLight/GnssUtilities.frequency_L1;
         frequency_L2 = 1227.60e6; % Hz
+        wavelength_L2 = Utilities.speedOfLight/GnssUtilities.frequency_L2;
         gpsStartEpoch = datetime(1980, 1, 6, 'TimeZone', 'UTCLeapSeconds');
         sPerWeek = 60*60*24*7;
     end
@@ -33,28 +35,28 @@ classdef GnssUtilities
                 range];
         end
 
-        function AzElRg_tr = AzElRangeToObserverEcefAtTimeReception(REcef_observer, ephemerides, prn, t_rx)
+        function [azElRgM_trx, rMEcef_prn, vMEcef_prn, clockCorrectionV_prn, relativisticCorrectionV_prn] = gpsStateXmitOrigin(rVEcef_observer, ephemeridesM, prn, t_rx)
             c = Utilities.speedOfLight;
 
             tGps_reception = GnssUtilities.datetime2Gps(t_rx);
-            [~, REcef_prn] = eph2pvt(ephemerides, tGps_reception, prn);
-            AzElRg_tr = GnssUtilities.AzElRangeToObserverEcef(REcef_observer, REcef_prn');
+            [~, rMEcef_prn, vMEcef_prn, clockCorrectionV_prn, relativisticCorrectionV_prn] = eph2pvt(ephemeridesM, tGps_reception, prn);
+            azElRgM_trx = GnssUtilities.AzElRangeToObserverEcef(rVEcef_observer, rMEcef_prn');
 
             t_transit = 0;
-            t_transitNew = seconds(AzElRg_tr(3, :)'/c);
+            t_transitNew = seconds(azElRgM_trx(3, :)'/c);
             while(abs(mean(t_transit - t_transitNew)) > seconds(1e-15))
                 t_transit = t_transitNew;
-                t_xmit = t_rx - t_transit;
-                tGps_xmit = GnssUtilities.datetime2Gps(t_xmit);
+                t_tx = t_rx - t_transit;
+                tGps_xmit = GnssUtilities.datetime2Gps(t_tx);
 
-                [~, REcefTx_prnTx] = eph2pvt(ephemerides, tGps_xmit, prn);
-                REcefTr_prnTx = zeros(size(REcefTx_prnTx));
-                for i = 1:size(REcefTx_prnTx, 1)
+                [~, rMEcef_prn, vMEcef_prn, clockCorrectionV_prn, relativisticCorrectionV_prn] = eph2pvt(ephemeridesM, tGps_xmit, prn);
+                REcefTr_prnTx = zeros(size(rMEcef_prn));
+                for i = 1:size(rMEcef_prn, 1)
                     C_EcefTxTr = GnssUtilities.transformEcefThroughTime(t_transit(i));
-                    REcefTr_prnTx(i, :) = (C_EcefTxTr*REcefTx_prnTx(i, :)')';
+                    REcefTr_prnTx(i, :) = (C_EcefTxTr*rMEcef_prn(i, :)')';
                 end
-                AzElRg_tr = GnssUtilities.AzElRangeToObserverEcef(REcef_observer, REcefTr_prnTx');
-                t_transitNew = seconds(AzElRg_tr(3, :)'/c);
+                azElRgM_trx = GnssUtilities.AzElRangeToObserverEcef(rVEcef_observer, REcefTr_prnTx');
+                t_transitNew = seconds(azElRgM_trx(3, :)'/c);
             end
         end
 
@@ -116,13 +118,13 @@ classdef GnssUtilities
             t_gps = [gpsWeek gpsSeconds];
         end
 
-        function RGeod = Ecef2Geodetic(REcef)
+        function rVGeod = Ecef2Geodetic(rVEcef)
             e = Utilities.eccentricity_earth;
 
-            [x, y, z] = Utilities.decompose(REcef);
+            [x, y, z] = Utilities.decompose(rVEcef);
 
-            p = norm([x y]);
-            r = norm(REcef);
+            rho = norm([x y]);
+            r = norm(rVEcef);
 
             longitute = atan2(y, x);
 
@@ -131,12 +133,14 @@ classdef GnssUtilities
             while(dLatitude > 1e-8)
                 latitude_previous = latitude;
                 radiusOfCurveInMeridian = GnssUtilities.radiusOfCurveInMeridian(latitude_previous);
-                latitude = atan((z + radiusOfCurveInMeridian*e^2*sin(latitude_previous))/p);
+                latitude = atan((z + radiusOfCurveInMeridian*e^2*sin(latitude_previous))/rho);
 
                 dLatitude = abs(latitude - latitude_previous);
             end
 
-            RGeod = [latitude; longitute];
+            height = rho/cos(latitude) - radiusOfCurveInMeridian;
+
+            rVGeod = [latitude; longitute; height];
         end
 
         function azElRanges = FilterAboveHorizon(azElRanges)
@@ -313,6 +317,13 @@ classdef GnssUtilities
 
         function TEC = totalElectronCountEstimation(rho_1, f_1, rho_2, f_2)
             TEC = (f_1*f_2)^2/40.3/(f_1^2 - f_2^2)*(rho_2 - rho_1);
+        end
+
+        function omegaT = dopplerFrequency(rMEcef_tx, vMEcef_tx, rVEcef_rx, f_base)
+            c = Utilities.speedOfLight;
+
+            rHatEcef_txRx = Utilities.UnitVector(rVEcef_rx - rMEcef_tx');
+            omegaT = (dot(vMEcef_tx', rHatEcef_txRx)*f_base/c)';
         end
     end
 end
