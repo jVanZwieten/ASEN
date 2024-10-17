@@ -114,3 +114,17 @@ TOF_t = AU.timeOfFlightXfer(a_x1, mu_sun) + AU.timeOfFlightXfer(a_x2, mu_sun)
 Utilities.s2y(TOF_t)
 
 ratio_a = a_saturn/a_earth
+
+%% 4c
+format long
+TOF_12 = 8807.81 - 7464.33
+
+e = 0.46;
+E_1 = deg2rad(333.1741577300176);
+E_2 = deg2rad(26.56519924405643);
+
+M_1 = AU.meanAnomalyFromE(E_1, e)
+M_2 = AU.meanAnomalyFromE(E_2, e)
+M_12 = M_2 - M_1 +2*pi
+n = deg2rad(0.02211426535691544) % rad/s
+TOF_12check = M_12/n

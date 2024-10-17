@@ -62,6 +62,10 @@ classdef Utilities
             A = A([(n + 1:end) (1:n)]);
         end
 
+        function s = min2s(min)
+            s = min*60;
+        end
+
         function multiplot(X, seriesLabels, axisLabels, figureTitle)
             n = size(X, 1) - 1;
             assert(length(seriesLabels) == n)
