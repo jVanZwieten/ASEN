@@ -1,11 +1,16 @@
 classdef HypersonicsUtilities
     properties(Constant)
-        inverseScaleHeight = 1.387e-4; % /m, aTilde
         airDensity_seaLevel = 1.225; % kg/m^3, rho_SL
+        airPressure_seaLevel = 1.01325e5; % N/m^2
+        inverseScaleHeight = 1.387e-4; % /m, aTilde
         earthSurfaceGravityAcceleration = 9.81; % m/s^2, g
         earthRadius = 6378e3; % m
+        gasConstant_air = 287; % J/kgK
+        ratioSpecificHeats_air = 1.4;
         velocityRatio_decelMax = exp(-.5); % v/v_0
         velocityRatio_heatingMax = exp(-1/6); % v/v_0
+
+        pascalsPerAtmosphere = 101325;
     end
     
     methods(Static)
@@ -103,8 +108,49 @@ classdef HypersonicsUtilities
         end
 
         %% aerothermaldynamics
-        function KEh0 = kineticEnergyRatio(M, gamma)
-            KEh0 = M.^2./(2/(gamma - 1) + M.^2);
+        function KEh0 = kineticEnergyRatio(M_1, gamma)
+            KEh0 = M_1.^2./(2/(gamma - 1) + M_1.^2);
+        end
+
+        function Re = reynoldsNumber(rho, u, L, mu)
+            Re = rho*u*L/mu;
+        end
+
+        function mu = sutherlandsLawViscosity(T)
+            mu = 1.458e-6*T^1.5/(T + 110.4);
+        end
+
+        function mu = sutherlandsLawThermalConductivity(T)
+            mu = 1.993e-3*T^1.5/(T + 112);
+        end
+
+        function a = speedOfSound(gamma, R, T)
+            a = sqrt(gamma*R*T);
+        end
+
+        function c_p = specificHeatAtConstantPressure(gamma, R)
+            c_p = gamma/(gamma - 1)*R;
+        end
+
+        function h_0 = enthalpyTotal(h, u)
+            h_0 = h + .5*u^2;
+        end
+
+        function rho = densityRealGasEffect(p, z, R, T)
+            rho = p/(z*R*T);
+        end
+
+        %% normal shock relations
+        function ratio = densityVelocity12Ratio(gamma, M_1)
+            ratio = (gamma + 1)*M_1^2/((gamma - 1)*M_1^2 + 2);
+        end
+
+        function ratio = pressureRatio(gamma, M_1)
+            ratio = (2*gamma*M_1^2 - (gamma - 1))/(gamma + 1);
+        end
+
+        function M_2 = machAfterShock(gamma, M_1)
+            M_2 = sqrt((2 + (gamma - 1)*M_1^2)/(2*gamma*M_1^2 - (gamma - 1)));
         end
     end
 end
