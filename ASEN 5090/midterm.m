@@ -34,10 +34,21 @@ vRhat_gps = v_gps*r_earth/r_gps
 f_dopplerGps = f_gps*vRhat_gps/c
 
 vRhat_leo = v_leo*r_earth/r_leo
-f_dopplerLeo = f_leo*v_leo/c
+f_dopplerLeo = f_leo*vRhat_leo/c
 
 %% 1g
 r_zLeo = r_leo*sind(55)
+
+A = 30 + 90;
+B = asind(sind(A)*r_earth/r_leo)
+C = 180 - A - B
+i_new = 90 - C
+r_new = r_leo*sind(C)/sind(A)
+
+rX = r_leo*cosd(i_new);
+rZ = r_leo*sind(i_new);
+elev = atan2d((rZ - r_earth), rX)
+range = rX/cosd(elev)
 
 %% 2
 rVLla_tx = [deg2rad(40); deg2rad(30); 100]; % rad rad m
