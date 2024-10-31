@@ -136,8 +136,10 @@ classdef Utilities
             rads = pi*semicircles;
         end
 
-        function Ahat = UnitVector(A)
-            Ahat = A./vecnorm(A, 2, 1);
+        function Ahat = unitVector(A)
+            % UNITVECTOR returns the unit vector(s) of input
+            % If n vectors, input as m x n
+            Ahat = A./vecnorm(A);
         end
 
         function Norms = VectorizedNorms(varargin)
