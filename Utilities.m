@@ -1,15 +1,13 @@
 classdef Utilities
     properties(Constant)
-        accelerationGravity_earthSurface = 9.81; % m/s^2
-        radius_earth = 6378137; % m, WGS-84 fundamental parameter
-        flattening_earth = 1/298.257223563; % WGS-84 fundamental parameter
-        eccentricity_earth = sqrt(2*Utilities.flattening_earth - Utilities.flattening_earth^2); % WGS-84 fundamental parameter
-        rotationRate_earth = 7.2921151467e-5; % rad/s
-
         speedOfLight = 299792458; % m/s
     end
 
     methods(Static)
+        function angle = angleBetweenUnitVectors(aHat, bHat)
+            angle = acos(dot(aHat, bHat));
+        end
+
         function tt = appendTimetableRow(tt, newRowTime, newRowValues)
             variableNames = tt.Properties.VariableNames;
             assert(length(variableNames) == length(newRowValues))
@@ -62,6 +60,11 @@ classdef Utilities
             A = A([(n + 1:end) (1:n)]);
         end
 
+        function [mag, dirHat] = magnitudeDirection(vector)
+            mag = vecnorm(vector);
+            dirHat = vector./mag;
+        end
+
         function s = min2s(min)
             s = min*60;
         end
@@ -110,6 +113,15 @@ classdef Utilities
             ylabel(axisLabels(2));
             title(figureTitle);
             legend(seriesLabels)
+        end
+
+        function angle = normalizeAngle(angle)
+            while(angle < 0)
+                angle = angle + 2*pi;
+            end
+            while(angle > 2*pi)
+                angle = angle - 2*pi;
+            end
         end
 
         function semicircles = rad2semicircle(rads)

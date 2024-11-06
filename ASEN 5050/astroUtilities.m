@@ -1,20 +1,4 @@
 classdef astroUtilities
-    properties(Constant)
-        astronomicalUnitToKm = 149597870.7; % km/AU
-        
-        gravityParameter_sun = 1.32712428e11; % km^3/s^2
-        
-        semiMajorAxis_earthAu = 1.0000010178; % AU
-        
-        radius_Moon = 1738; % km
-        gravityParameter_moon = 4902.799; % km^3/s^2
-        
-        radius_Mars = 3397.2; % km
-        gravityParameter_mars = 4.305e4; % km^3/s^2
-        
-        gravityParameter_saturn = 3.794e7; % km^3/s^2
-        semiMajorAxis_saturnAu = 9.554909595; % AU
-    end
     methods(Static)
         function H = AngularMomentum(R, V)
             H = cross(R, V);
