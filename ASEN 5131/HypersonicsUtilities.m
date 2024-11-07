@@ -6,6 +6,7 @@ classdef HypersonicsUtilities
         earthSurfaceGravityAcceleration = 9.81; % m/s^2, g
         earthRadius = 6378e3; % m
         gasConstant_air = 287; % J/kgK
+        gasConstant_universal = 8314.5; % J/kgK
         ratioSpecificHeats_air = 1.4;
         velocityRatio_decelMax = exp(-.5); % v/v_0
         velocityRatio_heatingMax = exp(-1/6); % v/v_0
@@ -103,7 +104,7 @@ classdef HypersonicsUtilities
             gs = -velocity_0^2*aTilde*sin(flightPathAngle)/2/g*exp(-1);
         end
         
-        function qDot_max = maxHeating(k, beta, velocity_0)
+        function qDot_max = maxHeatingBallistic(k, beta, velocity_0)
             qDot_max = k*sqrt(beta/6)*exp(-.5)*velocity_0^3;
         end
 
@@ -138,6 +139,37 @@ classdef HypersonicsUtilities
 
         function rho = densityRealGasEffect(p, z, R, T)
             rho = p/(z*R*T);
+        end
+
+        function alphaOverAlpha1 = massFractionFunction(rho, rho_d, theta_d, T)
+            alphaOverAlpha1 = rho_d/rho*exp(-theta_d/T);
+        end
+
+        function R_s = speciesGasConstant(molarMass_s)
+            R = HypersonicsUtilities.gasConstant_universal;
+            R_s = R/molarMass_s;
+        end
+
+        function c_vVib = specificHeatVibrational(R, theta_v, T)
+            a = theta_v/T;
+            c_vVib = R*a^2*exp(a)/(exp(a) - 1)^2;
+        end
+
+        function c_p = specificHeatConstantPressureDiatomic(R, theta_v, T)
+            c_p = 7/2*R + HypersonicsUtilities.specificHeatVibrational(R, theta_v, T);
+        end
+
+        function c_p = specificHeatConstantPressureMonoatomic(R)
+            c_p = 5/2*R;
+        end
+
+        %% liftingReentry
+        function qDot_max = maxHeatingLifting(k, B, LDRatio, v_0)
+            qDot_max = k*sqrt(8*B/27/LDRatio)*v_0^2;
+        end
+        
+        function v = velocityAtMaxHeatingLifting(v_0)
+            v = v_0*sqrt(2/3);
         end
 
         %% normal shock relations
