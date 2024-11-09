@@ -34,6 +34,12 @@ classdef Utilities
             clampedResult = max(min(x, upperBound), lowerBound);
         end
 
+        function tDays = dayOfYearTimeFraction(epoch)
+            doy = day(epoch,'dayofyear');
+            timeFraction = (hour(epoch) * 3600 + minute(epoch) * 60 + second(epoch)) / 86400;
+            tDays = doy + timeFraction;
+        end
+
         function s = days2s(d)
             s = d*24*60*60;
         end
