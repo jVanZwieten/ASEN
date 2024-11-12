@@ -1,6 +1,6 @@
 classdef CelestialParameters
     properties(Constant)
-        astronomicalUnitToKm = 149597870.7; % km/AU
+        kmPerAu = 149597870.7; % km/AU
         
         %% Sun
         gravityParameter_sun = 1.32712428e11; % km^3/s^2
@@ -25,5 +25,15 @@ classdef CelestialParameters
         %% Saturn
         gravityParameter_saturn = 3.794e7; % km^3/s^2
         semiMajorAxis_saturnAu = 9.554909595; % AU
+    end
+
+    methods(Static)
+        function km = au2km(au)
+            km = au*CelestialParameters.kmPerAu;
+        end
+
+        function au = km2au(km)
+            au = km/CelestialParameters.kmPerAu;
+        end
     end
 end

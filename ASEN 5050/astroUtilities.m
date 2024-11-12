@@ -217,6 +217,10 @@ classdef astroUtilities
         function a = semiMajorAxisFromspecificNRG(nrg_mech, mu)
             a = -mu/(2*nrg_mech);
         end
+
+        function a = semiMajorAxisHyperbolaFromVInfinity(v_inf, mu)
+            a = -mu/v_inf^2;
+        end
         
         function specNRG = specificNRGFromA(a,mu)
             specNRG = -mu/(2*a);
@@ -229,7 +233,7 @@ classdef astroUtilities
         function specMechNRG = specificNRGFromrv(r, v, mu)
             specMechNRG = v^2/2 - mu/r;
         end
-        
+
         function dt = timeBetweenEccentricAnomalies(E_1, E_2, e, n, k)
             dt = (2*pi*k + astroUtilities.meanAnomalyFromE(E_2, e) - astroUtilities.meanAnomalyFromE(E_1, e))/n;
         end
@@ -281,6 +285,13 @@ classdef astroUtilities
         function del = turningAngleFromEccentricity(e)
             del = 2*asin(1/e);
         end
+
+        function vVecRt_out = velocityAfterFlyby(vVecRt_in, vVecRt_body, del)
+            vVecRt_infIn = vVecRt_in - vVecRt_body;
+            C = [cos(del) -sin(del); sin(del) cos(del)];
+            vVecRth_infOut = C*vVecRt_infIn;
+            vVecRt_out = vVecRth_infOut + vVecRt_body;
+        end
         
         function v = velocityAtApsisFromHR(h, r)
             v = h/r;
@@ -301,9 +312,17 @@ classdef astroUtilities
         function V = velocityfDotgDot(R_0, V_0, fDot, gDot)
             V = fDot*R_0 + gDot*V_0;
         end
+
+        function v_r = velocityRadial(h, e, nu, mu)
+            v_r = mu/h*e*sin(nu);
+        end
         
         function vVRth = velocityVRthFromVPhi(v, phi)
             vVRth = v*[sin(phi); cos(phi); 0];
+        end
+
+        function v_theta = velocityTangential(h, e, nu, mu)
+            v_theta = mu/h*(1 + e*cos(nu));
         end
     end
 end

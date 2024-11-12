@@ -15,6 +15,12 @@ classdef Utilities
             tt = sortrows([tt; newRow]);
         end
 
+        function assertIsWithin(a, b, toleranceMagnitude)
+            tolerance = 10^toleranceMagnitude;
+            delta = abs(a - b);
+            assert(delta < tolerance, sprintf('|%g - %g| = %g > %g (tolerance)', a, b, delta, tolerance))
+        end
+
         function hex = binVector2Hex(V)
             binary_str = num2str(V);
             binary_str = binary_str(~isspace(binary_str));
