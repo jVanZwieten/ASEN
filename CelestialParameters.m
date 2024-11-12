@@ -1,6 +1,7 @@
 classdef CelestialParameters
     properties(Constant)
         kmPerAu = 149597870.7; % km/AU
+        universalGravitationalConstant = 6.673e-20; % km^3/(kg*s^2)
         
         %% Sun
         gravityParameter_sun = 1.32712428e11; % km^3/s^2
@@ -34,6 +35,10 @@ classdef CelestialParameters
 
         function au = km2au(km)
             au = km/CelestialParameters.kmPerAu;
+        end
+
+        function mu = gravitationalParameter(m)
+            mu = CelestialParameters.universalGravitationalConstant*m;
         end
     end
 end
