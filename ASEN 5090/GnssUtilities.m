@@ -166,10 +166,10 @@ classdef GnssUtilities
                 G(i) = XGi;
 
                 G1Feedback = [G1(3) G1(10)];
-                G1 = [mod(sum(G1Feedback), 2) G1(1:9)];
+                G1 = [mod(sum(G1Feedback), 2) G1];
 
                 G2Feedback = [G2(2) G2(3) G2(6) G2(8) G2(9) G2(10)];
-                G2 = [mod(sum(G2Feedback), 2) G2(1:9)];
+                G2 = [mod(sum(G2Feedback), 2) G2];
             end
         end
 

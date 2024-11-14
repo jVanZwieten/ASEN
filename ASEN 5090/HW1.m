@@ -1,5 +1,5 @@
 addpath("..")
-clear
+clear; close all
 
 % 1-2
 % a
