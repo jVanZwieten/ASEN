@@ -79,6 +79,10 @@ classdef astroUtilities
         function e = eccentricityFromNuInfinity(nu_inf)
             e = -1/cos(nu_inf);
         end
+
+        function e = eccentricityFromTurningAngle(del)
+            e = 1/sin(del/2);
+        end
         
         function phi = flightPathAngleFromENu(e, nu)
             phi = atan(e*sin(nu)/(1 + e*cos(nu)));
@@ -102,6 +106,11 @@ classdef astroUtilities
         
         function gDot = gDotFunction(r_0, p, deltaNu)
             gDot = 1 - r_0/p*(1 - cos(deltaNu));
+        end
+
+        function dV = idealRocketEquation(I_sp, m_i, m_f)
+            g_0 = CelestialParameters.accelerationGravity_earthSurface;
+            dV = I_sp*g_0*log(m_i/m_f);
         end
         
         function i = inclinationFromH(H)
@@ -180,6 +189,10 @@ classdef astroUtilities
         function m_p = propellantForManeuver(deltaV, m_initial, specificImpulse)
             g_0 = Utilities.accelerationGravity_earthSurface;
             m_p = m_initial*(1 - exp(-deltaV/(specificImpulse*g_0)));
+        end
+
+        function r = radialDistanceAtVFromSpecificNRG(v, NRG, mu)
+            r = mu/(v^2/2 - NRG);
         end
         
         function Omega = RAANFromN(N)
@@ -284,6 +297,12 @@ classdef astroUtilities
         
         function del = turningAngleFromEccentricity(e)
             del = 2*asin(1/e);
+        end
+
+        function del = turningAngleFromVVecInfInOut(vVec_infIn, vVec_infOut)
+            vHat_infIn = Utilities.unitVector(vVec_infIn);
+            vHat_infOut = Utilities.unitVector(vVec_infOut);
+            del = acos(dot(vHat_infIn, vHat_infOut));
         end
 
         function vVecRt_out = velocityAfterFlyby(vVecRt_in, vVecRt_body, del)

@@ -22,6 +22,10 @@ classdef CelestialParameters
         %% Mars
         radius_Mars = 3397.2; % km
         gravityParameter_mars = 4.305e4; % km^3/s^2
+
+        %% Jupiter
+        gravityParameter_jupiter = 1.268e8; % km^3/s^2
+        semiMajorAxis_jupiter = 5.202603191*CelestialParameters.kmPerAu; % km
         
         %% Saturn
         gravityParameter_saturn = 3.794e7; % km^3/s^2
