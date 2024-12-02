@@ -1,7 +1,7 @@
 classdef CelestialParameters
     properties(Constant)
         kmPerAu = 149597870.7; % km/AU
-        universalGravitationalConstant = 6.673e-20; % km^3/(kg*s^2)
+        universalGravitationalConstant = 6.6743e-20; % km^3/(kg*s^2)
         
         %% Sun
         gravityParameter_sun = 1.32712428e11; % km^3/s^2
@@ -11,6 +11,7 @@ classdef CelestialParameters
         eccentricity_earth = sqrt(2*CelestialParameters.flattening_earth - CelestialParameters.flattening_earth^2); % WGS-84 fundamental parameter
         flattening_earth = 1/298.257223563; % WGS-84 fundamental parameter
         gravityParameter_earth = 3.986012e5 % km^3/s^2
+        j2_earth = 1082.64e-6;
         radius_earth = 6378137; % m, WGS-84 fundamental parameter
         semiMajorAxis_earthAu = 1.0000010178; % AU
         rotationRate_earth = 7.2921151467e-5; % rad/s
@@ -20,8 +21,10 @@ classdef CelestialParameters
         gravityParameter_moon = 4902.799; % km^3/s^2
        
         %% Mars
-        radius_Mars = 3397.2; % km
         gravityParameter_mars = 4.305e4; % km^3/s^2
+        j2_mars = 1960e-6; % Wahrheit 2009
+        radius_Mars = 3397.2; % km
+        semiMajorAxis_mars = 1.523679342*CelestialParameters.kmPerAu; % km
 
         %% Jupiter
         gravityParameter_jupiter = 1.268e8; % km^3/s^2

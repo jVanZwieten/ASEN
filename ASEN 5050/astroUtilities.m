@@ -1,6 +1,6 @@
 classdef astroUtilities
     methods(Static)
-        function H = AngularMomentum(R, V)
+        function H = angularMomentum(R, V)
             H = cross(R, V);
         end
         
@@ -44,7 +44,7 @@ classdef astroUtilities
             E = acos((a - r)/(a*e));
         end
         
-        function E = eccentricAnomalyFromnu(nu, e)
+        function E = eccentricFromTrueAnomaly(nu, e)
             E = 2*atan(sqrt((1 - e)/(1 + e))*tan(nu/2));
         end
         
@@ -215,6 +215,10 @@ classdef astroUtilities
             a = h^2/(mu*(1 - e^2));
         end
         
+        function a = semiMajorAxisFromPeriod(P, mu)
+            a = (sqrt(mu)/2/pi*P)^(2/3);
+        end
+        
         function a = semiMajorAxisFrompe(p, e)
             a = p/(1 - e^2);
         end
@@ -239,11 +243,10 @@ classdef astroUtilities
             specNRG = -mu/(2*a);
         end
         
-        function specMechNRG = specificNRGFromRV(R, V, mu)
-            specMechNRG = astroUtilities.specificNRGFromrv(norm(R), norm(V), mu);
-        end
-        
-        function specMechNRG = specificNRGFromrv(r, v, mu)
+        function specMechNRG = specificNRGFromRV(r, v, mu)
+            r = norm(r);
+            v = norm(v);
+            
             specMechNRG = v^2/2 - mu/r;
         end
 
@@ -256,7 +259,7 @@ classdef astroUtilities
             dt = astroUtilities.timeBetweenEccentricAnomalies(E_1, E_2, e, n, k);
         end
         
-        function dt = timeBetweenTrueAnomalies(nu_1, nu_2, e, n, k)
+        function dt = timeBetweenTrueAno ;kjk,opipimalies(nu_1, nu_2, e, n, k)
             E_1 = astroUtilities.eccentricAnomalyFromnu(nu_1, e);
             E_2 = astroUtilities.eccentricAnomalyFromnu(nu_2, e);
             dt = astroUtilities.timeBetweenEccentricAnomalies(E_1, E_2, e, n, k);
@@ -292,7 +295,7 @@ classdef astroUtilities
         end
         
         function nu = trueFromEccentricAnomaly(E, e)
-            nu = 2*atan(sqrt((1 + e)/(1 - e))*tan(E/2));
+            nu = 2*atan(sqrt((1 - e)/(1 + e))*tan(E/2));
         end
         
         function del = turningAngleFromEccentricity(e)
@@ -342,6 +345,23 @@ classdef astroUtilities
 
         function v_theta = velocityTangential(h, e, nu, mu)
             v_theta = mu/h*(1 + e*cos(nu));
+        end
+
+        %% Perturbations        
+        function omegaDot = argumentOfPeriapsisDotFromJ2(J_2, R, mu, a, e, i)
+            omegaDot = -3/2*sqrt(mu)*J_2*R^2/((1-e^2)^2*a^(7/2))*(5/2*sin(i)^2 - 2);
+        end
+
+        function i = inclinationFromOmegaDot(OmegaDot, J_2, R, mu, a, e)
+            i = acos(OmegaDot/-3/2*sqrt(mu)*J_2*R^2/((1-e^2)^2*a^(7/2)));
+        end
+
+        function J_2 = J2FromOmegaDot(omegaDot, R, mu, a, e, i)
+            J_2 = -2*omegaDot*(1-e^2)^2*a^(7/2)/(-3*sqrt(mu)*R^2*cos(i));
+        end
+
+        function OmegaDot = RAANDotFromJ2(J_2, R, mu, a, e, i)
+            OmegaDot = -3/2*sqrt(mu)*J_2*R^2/((1-e^2)^2*a^(7/2))*cos(i);
         end
     end
 end
