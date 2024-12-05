@@ -5,6 +5,7 @@ classdef GnssUtilities
         frequency_L2 = 1227.60e6; % Hz
         wavelength_L2 = Utilities.speedOfLight/GnssUtilities.frequency_L2;
         gpsStartEpoch = datetime(1980, 1, 6, 'TimeZone', 'UTCLeapSeconds');
+        gpsChippingRate = 1.023e6; % Hz
         sPerWeek = 60*60*24*7;
     end
     methods(Static)
@@ -33,6 +34,11 @@ classdef GnssUtilities
             AzElRg = [azimuth
                 elevation
                 range];
+        end
+
+        function bpskModulatedSignal = bpskModulate(binarySignal, carrierSignal)
+            signal = 2 * binarySignal - 1;
+            bpskModulatedSignal = signal .* carrierSignal;
         end
 
         function [azElRgM_trx, rMEcef_prn, vMEcef_prn, clockCorrectionV_prn, relativisticCorrectionV_prn] = gpsStateXmitOrigin(rVEcef_observer, ephemeridesM, prn, t_rx)
@@ -64,8 +70,8 @@ classdef GnssUtilities
             omega_earth = Utilities.rotationRate_earth;
             phi = omega_earth*seconds(dTime);
             C_EcefT1T2 = [cos(phi) sin(phi) 0
-                        -sin(phi) cos(phi) 0
-                        0 0 1];
+                -sin(phi) cos(phi) 0
+                0 0 1];
         end
 
         function AzElRg = AzElRangeToObserverEcef(REcef_observer, REcef_satellites)
@@ -223,7 +229,7 @@ classdef GnssUtilities
             RGeomag_Ipp = GnssUtilities.RGeomagnetic(RGeod_observer, azEl_sat);
             amplitude_ionosphericDelay = GnssUtilities.ionosphericDelayAmplitude(alphas, RGeomag_Ipp(1));
             period_ionosphericDelay = GnssUtilities.ionosphericDelayPeriod(betas, RGeomag_Ipp(1));
-            
+
             t_Ipp = GnssUtilities.localTime(t_GPS, RGeomag_Ipp(2));
             phase_ionosphericDelay = 2*pi*(t_Ipp - A3)/period_ionosphericDelay;
 
@@ -273,6 +279,10 @@ classdef GnssUtilities
             end
         end
 
+        function ps = powerSpectrum(signal)
+            ps = 20*log10(sqrt(2)*abs(fft(signal)/length(signal)));
+        end
+
         function C_earth = radiusOfCurveInMeridian(latitudeGeodetic)
             r_earth = Utilities.radius_earth;
             e_earth = Utilities.eccentricity_earth;
@@ -292,6 +302,22 @@ classdef GnssUtilities
         function SatellitesInView = SatellitesInViewAtGeodetic(REcef_satellites, RGeod_observer, minElevation)
             AzElRg_satellites = [REcef_satellites(1:2, :); GnssUtilities.AzElRangeToObserverGeodetic(RGeod_observer, REcef_satellites(3:5, :))];
             SatellitesInView = GnssUtilities.SatellitesInView(AzElRg_satellites, minElevation);
+        end
+
+
+        function sampledSignal = sampleSignal(signal, t_signal, t_sample)
+            sampledSignal = zeros(1, length(t_sample));
+            for i = 1:length(t_sample)
+                idx = find(t_signal <= t_sample(i), 1, 'last');
+
+                if ~isempty(idx)
+                    sampledSignal(i) = signal(idx);
+                end
+            end
+        end
+
+        function spectrumAnalyzerView(f, ps, xlim1)
+            plot(f, ps, '.-'); xlabel('Frequency (Hz)'); ylabel('Power (dB)'); grid on; xlim(xlim1);
         end
 
         function C_Ecef2Enu = TranformationMatrix_Ecef2Enu(RGeod)
