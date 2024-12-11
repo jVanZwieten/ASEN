@@ -11,7 +11,7 @@ rVec_1 = [-2; 2];
 vVec_1plus = [0; 0; 0];
 
 %% 2a
-n = AU.meanMotion(mu_earth, a)
+n = AU.meanMotion(a, mu_earth)
 
 Phi_rr1 = [7 0; -6*pi 1]
 Phi_rv1 = [0 4/n; -4/n, -3*pi/n]
@@ -70,4 +70,4 @@ mu_mars = CelestialParameters.gravityParameter_mars;
 omega_rotMars = CelestialParameters.rotationRate_mars
 dLambda = 5*pi/6;
 T = dLambda/omega_rotMars
-a = AU.semiMajorAxisFromPeriod(mu_mars, T)
+a = AU.semiMajorAxisFromPeriod(T, mu_mars)

@@ -215,8 +215,8 @@ classdef astroUtilities
             a = h^2/(mu*(1 - e^2));
         end
         
-        function a = semiMajorAxisFromPeriod(P, mu)
-            a = (sqrt(mu)/2/pi*P)^(2/3);
+        function a = semiMajorAxisFromPeriod(T, mu)
+            a = (sqrt(mu)*T/(2*pi))^(2/3);
         end
         
         function a = semiMajorAxisFrompe(p, e)
