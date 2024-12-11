@@ -18,7 +18,7 @@ classdef Utilities
         function assertIsWithin(a, b, toleranceMagnitude)
             tolerance = 10^toleranceMagnitude;
             delta = abs(a - b);
-            assert(delta < tolerance, sprintf('|%g - %g| = %g > %g (tolerance)', a, b, delta, tolerance))
+            assert(all(delta(:) < tolerance), sprintf('|%g - %g| = %g > %g (tolerance)', a, b, delta, tolerance))
         end
 
         function hex = binVector2Hex(V)

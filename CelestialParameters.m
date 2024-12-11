@@ -24,6 +24,9 @@ classdef CelestialParameters
         gravityParameter_mars = 4.305e4; % km^3/s^2
         j2_mars = 1960e-6; % Wahrheit 2009
         radius_Mars = 3397.2; % km
+        rotationPeriod_marsDays = 1.025957; % days
+        rotationPeriod_mars = CelestialParameters.rotationPeriod_marsDays*24*60*60; % s
+        rotationRate_mars = 2*pi/CelestialParameters.rotationPeriod_mars; % rad/s
         semiMajorAxis_mars = 1.523679342*CelestialParameters.kmPerAu; % km
 
         %% Jupiter

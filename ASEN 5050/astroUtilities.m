@@ -156,7 +156,7 @@ classdef astroUtilities
             M = E - e*sin(E);
         end
         
-        function n = meanMotionFroma(a, mu)
+        function n = meanMotion(a, mu)
             n = sqrt(mu/a^3);
         end
         
