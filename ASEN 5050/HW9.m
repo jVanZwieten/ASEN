@@ -37,9 +37,31 @@ Phi_vr1 = [3*n*sin(nt_1) 0 0; 6*n*(cos(nt_1)-1) 0 0; 0 0 -n*sin(nt_1)]
 Phi_vv1 = [cos(nt_1) 2*sin(nt_1) 0; -2*sin(nt_1) 4*cos(nt_1)-3 0; 0 0 cos(nt_1)]
 rVec_0 = [rVec_0; 0]; % m
 
-vVec_1minus = Phi_vr1*rVec_0 + Phi_vv1*vVec_0minus
+vVec_1minus = Phi_vr1*rVec_0 + Phi_vv1*vVec_0plus
 dVVec_1 = vVec_1plus - vVec_1minus
 dV_1 = norm(dVVec_1)
+
+%% 2c
+rVec_0 = rVec_0(1:2);
+vVec_0plus = vVec_0plus(1:2);
+
+nt = [0:.1:pi, pi];
+X = zeros(2, length(nt));
+for i = 1:length(nt)
+    nt_i = nt(i);
+    Phi_rr = [4-3*cos(nt_i) 0; 6*(sin(nt_i)-nt_i) 1];
+    Phi_rv = [1/n*sin(nt_i) 2/n*(1-cos(nt_i)); 2/n*(cos(nt_i)-1) 1/n*(4*sin(nt_i)-3*nt_i)];
+    X(:, i) = Phi_rr*rVec_0 + Phi_rv*vVec_0plus;
+end
+
+figure
+plot(X(2, :), X(1, :)); xlabel("y (km)"); ylabel("x (km)"); title("Relative Motion of CubeSat in LVLH Frame"); axis equal
+hold on
+plot(X(2, 1), X(1, 1), 'bo', 'MarkerSize', 10, 'MarkerFaceColor', 'r');
+plot(X(2, end), X(1, end), 'bo', 'MarkerSize', 10, 'MarkerFaceColor', 'b');
+legend('Trajectory', 'Initial Position', 'Final Position');
+ylim([-2.5 2.5]);
+
 
 %% 3
 P_rotMars = CelestialParameters.rotationPeriod_mars
