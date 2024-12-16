@@ -184,5 +184,31 @@ classdef HypersonicsUtilities
         function M_2 = machAfterShock(gamma, M_1)
             M_2 = sqrt((2 + (gamma - 1)*M_1^2)/(2*gamma*M_1^2 - (gamma - 1)));
         end
+
+        %% boundary layer
+        function qDot_w = detraEtAllHeatFlux(rho, u, R_N)
+            qDot_w = 5.156e-5*sqrt(rho)*u^3.15/sqrt(R_N);
+        end
+
+        function dudx_e = velocityGradient(R_N, p_e, p_inf, rho_e)
+            dudx_e = 1/R_N*sqrt(2*(p_e - p_inf)/rho_e);
+        end
+
+        function qDot_w = fayRiddellHeatFlux(k, Pr_w, rho_e, mu_e, rho_w, mu_w, dudx_e, h_0e, h_w, F)
+            qDot_w = k/Pr_w^.06*(rho_e*mu_e)^.4*(rho_w*mu_w)^.1*sqrt(dudx_e)*(h_0e - h_w)*F;
+        end
+        
+        function F = fayRiddelCase1(Le, h_dOverH_0e)
+            F = 1 + (Le^0.52 - 1)*h_dOverH_0e;
+        end
+                
+        function F = fayRiddelCase2(Le, h_dOverH_0e)
+            F = 1 + (Le^0.63 - 1)*h_dOverH_0e;
+        end
+                
+        function F = fayRiddelCase3(h_dOverH_0e)
+            F = 1 - h_dOverH_0e;
+        end
+        
     end
 end
