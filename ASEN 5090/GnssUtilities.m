@@ -200,10 +200,14 @@ classdef GnssUtilities
             f_L1 = GnssUtilities.frequency_L1;
             f_L2 = GnssUtilities.frequency_L2;
             TEC = GnssUtilities.totalElectronCountEstimation(rho_1, f_L1, rho_2, f_L2);
-            [I_L1, I_L2] = GnssUtilities.ionosphericDelayFromTEC(TEC, f_L1, f_L2);
+            [I_L1, I_L2] = GnssUtilities.ionosphericDelayFromTECDualFreq(TEC, f_L1, f_L2);
         end
 
-        function [I_1, I_2] = ionosphericDelayFromTEC(TEC, f_1, f_2)
+        function I_rho = ionosphericDelay(TEC, f)
+            I_rho = 40.3*TEC/f^2;
+        end
+
+        function [I_1, I_2] = ionosphericDelayFromTECDualFreq(TEC, f_1, f_2)
             I_1 = 40.3*TEC/f_1^2;
             I_2 = 40.3*TEC/f_2^2;
         end
@@ -314,6 +318,10 @@ classdef GnssUtilities
                     sampledSignal(i) = signal(idx);
                 end
             end
+        end
+
+        function Ls = spaceLoss(r_TxRx, wavelength)
+            Ls = 20*log10(4*pi/wavelength) + 20*log10(r_TxRx);
         end
 
         function spectrumAnalyzerView(f, ps, xlim1)
