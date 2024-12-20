@@ -8,10 +8,13 @@ classdef HypersonicsUtilities
         gasConstant_air = 287; % J/kgK
         gasConstant_universal = 8314.5; % J/kgK
         ratioSpecificHeats_air = 1.4;
+        specificHeatAtConstantPressure_air = HypersonicsUtilities.specificHeatAtConstantPressure(HypersonicsUtilities.ratioSpecificHeats_air, HypersonicsUtilities.gasConstant_air);
         velocityRatio_decelMax = exp(-.5); % v/v_0
         velocityRatio_heatingMax = exp(-1/6); % v/v_0
 
         pascalsPerAtmosphere = 101325;
+
+        stefanBoltzmannConstant = 5.67e-8; % W/m^2K^4
     end
     
     methods(Static)
@@ -129,6 +132,12 @@ classdef HypersonicsUtilities
             a = sqrt(gamma*R*T);
         end
 
+        function a = speedOfSoundAir(T)
+            gamma = HypersonicsUtilities.ratioSpecificHeats_air;
+            R = HypersonicsUtilities.gasConstant_air;
+            a = HypersonicsUtilities.speedOfSound(gamma, R, T);
+        end
+
         function c_p = specificHeatAtConstantPressure(gamma, R)
             c_p = gamma/(gamma - 1)*R;
         end
@@ -163,6 +172,25 @@ classdef HypersonicsUtilities
             c_p = 5/2*R;
         end
 
+        function p = idealGasPressure(rho, T)
+            R = HypersonicsUtilities.gasConstant_air;
+            p = rho*R*T;
+        end
+
+        function rho = idealGasDensity(p, T)
+            R = HypersonicsUtilities.gasConstant_air;
+            rho = p/R/T;
+        end
+
+        function T_0OverT = stagnationTemperatureRatio(M, gamma)
+            T_0OverT = 1 + (gamma - 1)/2*M^2;
+        end
+
+        function T_0OverT = stagnationTemperatureRatioAir(M)
+            gamma = HypersonicsUtilities.ratioSpecificHeats_air;
+            T_0OverT = HypersonicsUtilities.stagnationTemperatureRatio(M, gamma);
+        end
+
         %% liftingReentry
         function qDot_max = maxHeatingLifting(k, B, LDRatio, v_0)
             qDot_max = k*sqrt(8*B/27/LDRatio)*v_0^2;
@@ -186,8 +214,8 @@ classdef HypersonicsUtilities
         end
 
         %% boundary layer
-        function qDot_w = detraEtAllHeatFlux(rho, u, R_N)
-            qDot_w = 5.156e-5*sqrt(rho)*u^3.15/sqrt(R_N);
+        function qDot_w = detraEtAllHeatFlux(rho_inf, u_inf, R_N)
+            qDot_w = 5.156e-5*sqrt(rho_inf)*u_inf^3.15/sqrt(R_N);
         end
 
         function dudx_e = velocityGradient(R_N, p_e, p_inf, rho_e)
@@ -195,7 +223,7 @@ classdef HypersonicsUtilities
         end
 
         function qDot_w = fayRiddellHeatFlux(k, Pr_w, rho_e, mu_e, rho_w, mu_w, dudx_e, h_0e, h_w, F)
-            qDot_w = k/Pr_w^.06*(rho_e*mu_e)^.4*(rho_w*mu_w)^.1*sqrt(dudx_e)*(h_0e - h_w)*F;
+            qDot_w = k/Pr_w^.6*(rho_e*mu_e)^.4*(rho_w*mu_w)^.1*sqrt(dudx_e)*(h_0e - h_w)*F;
         end
         
         function F = fayRiddelCase1(Le, h_dOverH_0e)
@@ -209,6 +237,26 @@ classdef HypersonicsUtilities
         function F = fayRiddelCase3(h_dOverH_0e)
             F = 1 - h_dOverH_0e;
         end
+
+        function TStar = EckertReferenceTemperature(T_e, T_0e, T_w, r)
+            TStar = .5*(T_e + T_w) + .22*r*(T_0e - T_e);
+        end
         
+        function h_aw = hawFromR(r, h_0e, h_e)
+            h_aw = r*(h_0e - h_e) + h_e;
+        end
+
+        function C_h = reynoldsAnalogy(C_fx, Pr)
+            C_h = .5*C_fx*Pr^(-2/3);
+        end
+
+        function qDot_w = heatFluxFromHeatingCoefficient(C_h, rhoStar, u_e, h_aw, h_w)
+            qDot_w = C_h*rhoStar*u_e*(h_aw - h_w);
+        end
+
+        function qDot_rad = radiationHeatFlux(T_w, emissivity)
+            sigma = HypersonicsUtilities.stefanBoltzmannConstant;
+            qDot_rad = emissivity*sigma*(T_w^4);
+        end
     end
 end
