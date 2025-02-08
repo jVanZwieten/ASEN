@@ -56,6 +56,10 @@ classdef Utilities
             end
         end
 
+        function dXVec = differenceAtEachStep(XMat)
+            dXVec = XMat(2:end, :) - XMat(1:end-1, :);
+        end
+
         function s = h2s(h)
             s = h*60*60;
         end
