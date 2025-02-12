@@ -26,12 +26,12 @@ The purpose of maintainable code is not to explain the physics or equation deriv
 [value][vector modifier][reference frame]_[owner][instance]
 
 ### vector modifiers
-* V = vector (nx1)
+* Vec = vector (nx1)
 * Hat = unit vector
 * M = matrix (nxm)
 * d = delta
 * Dot = rate (derivative)
 * DotDot ... multiple derivative
-* T = tilde
+* Til = tilde
 
-If variables a and aV exist, a is the magnitude of aV.
+If variables a and aVec exist, a is the magnitude of aVec.
