@@ -75,6 +75,10 @@ classdef CR3BPUtilities
         end
 
         function [t, X] = integrateCr3bp(xVec_0, mu, tSpan, tolerancePower)
+            if(length(tSpan) == 1)
+                tSpan = [0, tSpan];
+            end
+
             solverOptions = odeset('stats', 'off', 'RelTol', 10^tolerancePower, 'AbsTol', 10^tolerancePower);
             [t, X] = ode45(@(t, X) CR3BPUtilities.cr3bpEom(t, X, mu), tSpan, xVec_0, solverOptions);
         end
@@ -94,7 +98,7 @@ classdef CR3BPUtilities
             end
             assert(length(deltaXVec_0) == 6)
 
-            UstarMat = CR3BPUtilities.potentialDoubleDerivativeEvaluatedAtPlanarMat(rVec_equilibrium, mu);
+            UstarMat = CR3BPUtilities.potentialDoubleDerivativeAtMat(rVec_equilibrium, mu);
             solverOptions = odeset('stats', 'off', 'RelTol', 10^tolerancePower, 'AbsTol', 10^tolerancePower);
             [t, X] = ode45(@(t, X) CR3BPUtilities.cr3bpEomEquilibriumLinearized(t, X, UstarMat), tSpan, deltaXVec_0, solverOptions);
         end
@@ -148,10 +152,10 @@ classdef CR3BPUtilities
         function [lagrangePointStabilitiesT] = lagrangeStability(mu)
             lagrangePoints = CR3BPUtilities.lagrangePoints(mu);
 
-            lagrangePointStabilitiesT = table('Size', [5, 6], 'VariableTypes', {'double', 'double', 'double', 'double', 'double', 'double'}, 'VariableNames', {'InPlaneEigenvector1', 'InPlaneEigenvector2', 'InPlaneEigenvector3', 'InPlaneEigenvector4', 'OutPlaneEigenvector1', 'OutPlaneEigenvector2'}, 'RowNames', {'L1', 'L2', 'L3', 'L4', 'L5'});
+            lagrangePointStabilitiesT = table('Size', [5, 6], 'VariableTypes', {'double', 'double', 'double', 'double', 'double', 'double'}, 'VariableNames', {'InPlaneEigenvalue1', 'InPlaneEigenvalue2', 'InPlaneEigenvalue3', 'InPlaneEigenvalue4', 'OutPlaneEigenvalue1', 'OutPlaneEigenvalue2'}, 'RowNames', {'L1', 'L2', 'L3', 'L4', 'L5'});
             for i = 1:length(lagrangePoints)
                 lagrangePoint = lagrangePoints{i};
-                [Ustar_xx, Ustar_xy, Ustar_yy, Ustar_zz] = CR3BPUtilities.potentialDoubleDerivativeEvaluatedAtPlanar(lagrangePoint, mu);
+                [Ustar_xx, Ustar_xy, Ustar_yy, Ustar_zz] = CR3BPUtilities.potentialDoubleDerivativeAt(lagrangePoint, mu);
 
                 a = -4 + Ustar_xx + Ustar_yy;
                 b = sqrt((4 - Ustar_xx - Ustar_yy)^2 - 4*(Ustar_xx*Ustar_yy - Ustar_xy^2));
@@ -172,7 +176,7 @@ classdef CR3BPUtilities
             xi_0 = xiVec(1);
             eta_0 = xiVec(2);
 
-            Ustar_xx = CR3BPUtilities.potentialDoubleDerivativeEvaluatedAtPlanar(rVec_equilibrium, mu);
+            Ustar_xx = CR3BPUtilities.potentialDoubleDerivativeAt(rVec_equilibrium, mu);
 
             alpha_3 = (lambda_3^2 - Ustar_xx)/2/lambda_3;
 
@@ -184,6 +188,18 @@ classdef CR3BPUtilities
 
         function P = librationPeriod(eigenvalue)
             P = 2*pi/abs(imag(eigenvalue));
+        end
+
+        function A = linearizedA(rVec_equilibrium, mu)
+            UstarMat = CR3BPUtilities.potentialDoubleDerivativeAtMat(rVec_equilibrium, mu);
+            Omega = [0, 2, 0; -2, 0, 0; 0, 0, 0];
+            A = [zeros(3), eye(3); UstarMat, Omega];
+        end
+
+        function A_2D = linearizedA2d(rVec_equilibrium, mu)
+            UstarMat = CR3BPUtilities.potentialDoubleDerivativeAtMat(rVec_equilibrium, mu);
+            Omega = [0, 2; -2, 0];
+            A_2D = [zeros(2), eye(2); UstarMat(1:2, 1:2), Omega];
         end
 
         function mu = massRatio(m1, m2)
@@ -269,7 +285,7 @@ classdef CR3BPUtilities
             rVec_2 = rVec - [1 - mu; 0; 0];
         end
 
-        function [Ustar_xx, Ustar_xy, Ustar_yy, Ustar_zz] = potentialDoubleDerivativeEvaluatedAtPlanar(rVec, mu)
+        function [Ustar_xx, Ustar_xy, Ustar_yy, Ustar_zz] = potentialDoubleDerivativeAt(rVec, mu)
             x = rVec(1);
             y = rVec(2);
             [r_1, r_2] = CR3BPUtilities.r_primaries(rVec, mu);
@@ -280,8 +296,8 @@ classdef CR3BPUtilities
             Ustar_zz = -(1 - mu)/r_1^3 - mu/r_2^3;
         end
 
-        function UstarMat = potentialDoubleDerivativeEvaluatedAtPlanarMat(rVec_equilibrium, mu)
-            [Ustar_xx, Ustar_xy, Ustar_yy, Ustar_zz] = CR3BPUtilities.potentialDoubleDerivativeEvaluatedAtPlanar(rVec_equilibrium, mu);
+        function UstarMat = potentialDoubleDerivativeAtMat(rVec_equilibrium, mu)
+            [Ustar_xx, Ustar_xy, Ustar_yy, Ustar_zz] = CR3BPUtilities.potentialDoubleDerivativeAt(rVec_equilibrium, mu);
             UstarMat = [Ustar_xx, Ustar_xy, 0; Ustar_xy, Ustar_yy, 0; 0, 0, Ustar_zz];
         end
     end

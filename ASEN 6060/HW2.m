@@ -1,4 +1,4 @@
-clc; clc; clear; close all;
+clc; clear; close all;
 format long e
 addpath('..')
 
@@ -66,7 +66,7 @@ plot(X_nonLinear(:, 1), X_nonLinear(:, 2), 'DisplayName', 'Nonlinear Orbit')
 legend
 
 %% 4e
-A2D_earthLunaL1 = CR3BPUtilities.equilibriumPerturbationA2D(rVec_L1, mu_earthLuna);
+A2D_earthLunaL1 = CR3BPUtilities.linearizedA2d(rVec_L1, mu_earthLuna);
 [V, D] = eig(A2D_earthLunaL1);
 lambda_3 = D(3, 3)
 lambda_4 = D(4, 4)
@@ -81,7 +81,7 @@ dXVec_0(1)/basisVec_1(1)*basisVec_1
 
 %% 5a
 rVec_L4 = lagrangePoints_earthLuna{4};
-A2D_earthLunaL4 = CR3BPUtilities.equilibriumPerturbationA2D(rVec_L4, mu_earthLuna);
+A2D_earthLunaL4 = CR3BPUtilities.linearizedA2d(rVec_L4, mu_earthLuna);
 [eigenvectors_L4, eigenvalues_L4] = eig(A2D_earthLunaL4)
 eigenvalues_L4 = j*imag(eigenvalues_L4*ones(4, 1))
 
